@@ -1,0 +1,6 @@
+@Hybrid.WebAPI_HostAddress = http://localhost:5226
+
+GET {{Hybrid.WebAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
