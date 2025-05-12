@@ -1,0 +1,112 @@
+﻿{
+   "CodeGenerationMode": 4,
+   "ContextClassName": "HybridDBContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": true,
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Models",
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Hybrid.Repositories",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "[dbo].[Course]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Level]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Minigame]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[MinigameTemplate]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[PaymentMethod]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Rating]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Role]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Student]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StudentAccomplisment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StudentSupscription]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[StudentTier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[SupscriptionExtentionOrder]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Teacher]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TeacherSupscription]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TeacherTier]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TransactionHistory]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[User]",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": false,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": true,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": false,
+   "UseT4Split": false
+}
