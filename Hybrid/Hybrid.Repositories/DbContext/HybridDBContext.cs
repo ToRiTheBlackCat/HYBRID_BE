@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Hybrid.Repositories.Models;
 
@@ -50,6 +51,18 @@ public partial class HybridDBContext : DbContext
     public virtual DbSet<TransactionHistory> TransactionHistories { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public static string GetConnectionString(string connectionStringName)
+    {
+        string envVarName = $"ConnectionStrings__{connectionStringName}";
+        string? connectionString = Environment.GetEnvironmentVariable(envVarName);
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException($"Environment variable '{envVarName}' not found.");
+        }
+
+        return connectionString;
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
