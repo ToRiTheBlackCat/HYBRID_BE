@@ -31,5 +31,52 @@ namespace Hybrid.Repositories.Repos
                                                              x.IsActive);
             return user;
         }
+
+        public async Task<User?> GetUserByMailAsync(string email)
+        {
+            var user = await _dbSet
+                .Include(x => x.Role)
+                .FirstOrDefaultAsync(x =>
+                    x.Email == email &&
+                    x.IsActive
+                );
+
+            return user;
+        }
+
+        /// <summary>
+        /// Automatically assign a UserId then create the new User
+        /// </summary>
+        public override void Create(User entity)
+        {
+            entity.UserId = GenerateId();
+            base.Create(entity);
+        }
+
+        /// <summary>
+        /// Automatically assign a UserId then create the new User asynchronously
+        /// </summary>
+        public override async Task<int> CreateAsync(User entity)
+        {
+            entity.UserId = GenerateId();
+            return await base.CreateAsync(entity);
+        }
+
+        /// <summary>
+        /// Generate UserId for new User
+        /// </summary>
+        private string GenerateId()
+        {
+            if (!_context.Users.Any())
+            {
+                return "HU0";
+            }
+
+            var newNumber = _context.Users
+                .Select(u => int.Parse(u.UserId.Substring(2)))
+                .ToList().Max() + 1;
+
+            return "HU" + newNumber;
+        }
     }
 }

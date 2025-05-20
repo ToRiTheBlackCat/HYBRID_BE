@@ -122,12 +122,31 @@ namespace Hybrid.Repositories.Base
             return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, typeId) == TId);
         }
 
-        public void Create(T entity)
+        /// <summary>
+        /// Get the first element that matches the predicate
+        /// and Include the objects that matches the expression array
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <param name="includeProperties">Include expression array</param>
+        /// <returns>A matching entity or null if not found"</returns>
+        public async Task<T?> GetFirstWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _dbSet;
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.FirstOrDefaultAsync(predicate);
+        }
+
+        public virtual void Create(T entity)
         {
             _dbSet.Add(entity);
         }
 
-        public async Task<int> CreateAsync(T entity)
+        public virtual async Task<int> CreateAsync(T entity)
         {
             _dbSet.Add(entity);
             return await _context.SaveChangesAsync();
