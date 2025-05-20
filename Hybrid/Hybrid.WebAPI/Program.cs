@@ -52,7 +52,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+var connectionString = HybridVariables.ConnectionString;
 
 //// Register for DBContext
 builder.Services.AddDbContext<HybridDBContext>(options =>
@@ -87,7 +87,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("Jwt__Secret") ?? "")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(HybridVariables.JwtSecret)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:ValidAudience"],

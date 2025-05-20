@@ -64,6 +64,58 @@ namespace Hybrid.WebAPI.Controllers
         }
 
         /// <summary>
+        /// Handles login with google request 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        [HttpPost("login-google")]
+        public async Task<ActionResult<LoginResponse?>> LoginGoogle([FromBody] string token)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userService.AuthenticateGoogle(token);
+            if (user == null)
+            {
+                return NotFound("User not found. Try again!");
+            }
+            else
+            {
+                var accessToken = _jwtAuth.GenerateAccessToken(user);
+                var refreshToken = _jwtAuth.GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+                await _userService.UpdateUserAccount(user);
+
+                var response = new LoginResponse
+                {
+                    UserId = user.UserId.Trim(),
+                    RoleId = user.RoleId,
+                    RoleName = user.Role.RoleName,
+                    AccessToken = accessToken,
+                    RefreshToken = user.RefreshToken,
+                };
+
+                return Ok(response);
+            }
+        }
+
+        [HttpPost("reset-pass")]
+        public async Task<ActionResult<LoginResponse?>> PasswordReset([FromBody] string email)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.ResetPasswordAsync(email);
+            return Ok(new
+            {
+                Success = result.Item1,
+                Message = result.Item2
+            });
+        }
+
+
+        /// <summary>
         /// API_Refresh Token 
         /// refreshToken_string
         /// RefreshTokenResponse_ViewModel

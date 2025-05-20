@@ -33,7 +33,7 @@ namespace Hybrid.Services.Helpers
         /// </summary>
         public string GenerateAccessToken(User? user)
         {
-            var jwtKey = Environment.GetEnvironmentVariable("Jwt__Secret");
+            var jwtKey = HybridVariables.JwtSecret;
             var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey ?? ""));
             var credential = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
