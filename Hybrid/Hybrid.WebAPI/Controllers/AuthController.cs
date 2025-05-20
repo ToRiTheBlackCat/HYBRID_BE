@@ -64,10 +64,12 @@ namespace Hybrid.WebAPI.Controllers
         }
 
         /// <summary>
-        /// Handles login with google request 
+        /// API_GoogleLogin 
+        /// CreatedBy: TuanCA
+        /// Created Date: 20/5/2025
+        /// Updated By: X
+        /// Updated Date: X
         /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
         [HttpPost("login-google")]
         public async Task<ActionResult<LoginResponse?>> LoginGoogle([FromBody] string token)
         {
@@ -100,6 +102,13 @@ namespace Hybrid.WebAPI.Controllers
             }
         }
 
+        /// <summary>
+        /// API_PasswordReset
+        /// CreatedBy: TuanCA
+        /// Created Date: 20/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpPost("reset-pass")]
         public async Task<ActionResult<LoginResponse?>> PasswordReset([FromBody] string email)
         {

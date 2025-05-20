@@ -51,6 +51,9 @@ namespace Hybrid.Services.Services
         /// <summary>
         /// FUNC_AuthenticateGoogle
         /// Created By: TuanCASE
+        /// Created Date: 20/5/2025
+        /// Updated By: X
+        /// Updated Date: X
         /// </summary>
         public async Task<User?> AuthenticateGoogle(string token)
         {
@@ -107,6 +110,9 @@ namespace Hybrid.Services.Services
         /// <summary>
         /// FUNC_ResetPassword
         /// Created By: TuanCASE
+        /// Created Date: 20/5/2025
+        /// Updated By: X
+        /// Updated Date: X
         /// </summary>
         public async Task<(bool, string)> ResetPasswordAsync(string email)
         {
