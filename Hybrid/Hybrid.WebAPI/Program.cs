@@ -99,7 +99,20 @@ builder.Services.AddAuthentication(options =>
 
 // Register for Services
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ISupscriptionExtentionService, SupscriptionExtentionService>();
+builder.Services.AddScoped<ITierService, TierService>();
+
+// Register for Repos
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<TeacherRepository>();
+builder.Services.AddScoped<StudentTierRepository>();
+builder.Services.AddScoped<TeacherTierRepository>();
+builder.Services.AddScoped<TransactionRepository>();
+builder.Services.AddScoped<SupscriptionExtentionRepository>();
+builder.Services.AddScoped<StudentSupscriptionRepository>();
+builder.Services.AddScoped<TeacherSupscriptionRepository>();
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
