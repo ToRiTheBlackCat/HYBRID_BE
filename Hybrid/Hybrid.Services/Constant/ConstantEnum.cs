@@ -8,11 +8,11 @@ namespace Hybrid.Services.Constant
 {
     public static class ConstantEnum
     {
-        public enum RoleID
+        public static class RoleID
         {
-            ADMIN = 1,
-            STUDENT = 2,
-            TEACHER = 3
+            public const string ADMIN = "1";
+            public const string STUDENT = "2";
+            public const string TEACHER = "3";
         }
 
     }
