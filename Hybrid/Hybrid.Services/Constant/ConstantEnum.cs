@@ -14,6 +14,11 @@ namespace Hybrid.Services.Constant
             public const string STUDENT = "2";
             public const string TEACHER = "3";
         }
-
+        public enum TransactionStatus
+        {
+            PROCCESSING = 1,
+            CONFIRMED = 2,
+            CANCELED = 3
+        }
     }
 }

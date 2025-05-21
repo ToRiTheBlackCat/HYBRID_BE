@@ -102,7 +102,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<StudentRepository>();
 builder.Services.AddScoped<TeacherRepository>();
-
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<TransactionRepository>();
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
