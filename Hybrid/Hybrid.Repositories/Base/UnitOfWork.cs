@@ -17,16 +17,19 @@ namespace Hybrid.Repositories.Base
         public UserRepository UserRepo { get; }
         public StudentRepository StudentRepo { get; }
         public TeacherRepository TeacherRepo { get; }
+        public TransactionRepository TransactionRepo { get; }
 
         public UnitOfWork(HybridDBContext context, 
                           UserRepository userRepo,
                           StudentRepository studentRepo, 
-                          TeacherRepository teacherRepo)
+                          TeacherRepository teacherRepo, 
+                          TransactionRepository transactionRepo)
         {
             _context = context;
             UserRepo = userRepo;
             StudentRepo = studentRepo;
             TeacherRepo = teacherRepo;
+            TransactionRepo = transactionRepo;
         }
 
         public async Task BeginTransactionAsync()
