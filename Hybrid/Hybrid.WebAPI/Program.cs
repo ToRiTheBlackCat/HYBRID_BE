@@ -104,6 +104,10 @@ builder.Services.AddScoped<StudentRepository>();
 builder.Services.AddScoped<TeacherRepository>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<TransactionRepository>();
+builder.Services.AddScoped<ISupscriptionExtentionService, SupscriptionExtentionService>();
+builder.Services.AddScoped<SupscriptionExtentionRepository>();
+builder.Services.AddScoped<StudentSupscriptionRepository>();
+builder.Services.AddScoped<TeacherSupscriptionRepository>();
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
@@ -120,7 +124,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "HYBRID_API v1");
+        c.RoutePrefix = string.Empty; // Serve Swagger UI at the app root
+    });
 
 }
 
