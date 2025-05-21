@@ -100,6 +100,9 @@ builder.Services.AddAuthentication(options =>
 // Register for Services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<TeacherRepository>();
+
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
