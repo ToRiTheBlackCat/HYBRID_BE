@@ -46,5 +46,29 @@ namespace Hybrid.Services.Helpers
                 TierId = signUpRequestViewModel.TierId,
             };
         }
+
+        public static StudentSupscription Map_SupscriptionExtentionOrder_To_StudentSupscription(this SupscriptionExtentionOrder supscriptionExtentionOrder)
+        {
+            return new StudentSupscription
+            {
+                StudentId = supscriptionExtentionOrder.UserId,
+                TierId = supscriptionExtentionOrder.TierId,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(supscriptionExtentionOrder.Days),
+                IsActive = true
+            };
+        }
+
+        public static TeacherSupscription Map_SupscriptionExtentionOrder_To_TeacherSupscription(this SupscriptionExtentionOrder supscriptionExtentionOrder)
+        {
+            return new TeacherSupscription
+            {
+                TeacherId = supscriptionExtentionOrder.UserId,
+                TierId = supscriptionExtentionOrder.TierId,
+                StartDate = DateTime.Now,
+                EndDate = DateTime.Now.AddDays(supscriptionExtentionOrder.Days),
+                IsActive = true
+            };
+        }
     }
 }
