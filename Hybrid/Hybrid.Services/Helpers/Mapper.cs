@@ -1,4 +1,5 @@
-﻿using Hybrid.Repositories.Models;
+﻿using Azure.Core;
+using Hybrid.Repositories.Models;
 using Hybrid.Services.ViewModel;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,30 @@ namespace Hybrid.Services.Helpers
                 CreatedDate = DateTime.Now,
                 RoleId = signUpRequestViewModel.RoleId,
                 IsActive = true
+            };
+        }
+
+        public static Student Map_SignUpVM_To_Student(this SignUpRequest signUpRequestViewModel)
+        {
+            return new Student
+            {
+                FullName = signUpRequestViewModel.FullName,
+                Address = signUpRequestViewModel.Address,
+                Phone = signUpRequestViewModel.Phone,
+                YearOfBirth = signUpRequestViewModel.YearOfBirth,
+                TierId = signUpRequestViewModel.TierId,
+            };
+        }
+
+        public static Teacher Map_SignUpVM_To_Teacher(this SignUpRequest signUpRequestViewModel)
+        {
+            return new Teacher
+            {
+                FullName = signUpRequestViewModel.FullName,
+                Address = signUpRequestViewModel.Address,
+                Phone = signUpRequestViewModel.Phone,
+                YearOfBirth = signUpRequestViewModel.YearOfBirth,
+                TierId = signUpRequestViewModel.TierId,
             };
         }
     }
