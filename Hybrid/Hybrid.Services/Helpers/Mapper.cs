@@ -70,5 +70,25 @@ namespace Hybrid.Services.Helpers
                 IsActive = true
             };
         }
+
+        public static TierResponse Map_StudentTier_To_TierResponse(this StudentTier studentTier)
+        {
+            return new TierResponse
+            {
+                TierId = studentTier.TierId.Trim(),
+                TierName = studentTier.TierName.Trim(),
+                Description = ""
+            };
+        }
+
+        public static TierResponse Map_TeacherTier_To_TierResponse(this TeacherTier teacherTier)
+        {
+            return new TierResponse
+            {
+                TierId = teacherTier.TierId.Trim(),
+                TierName = teacherTier.TierName.Trim(),
+                Description = ""
+            };
+        }
     }
 }
