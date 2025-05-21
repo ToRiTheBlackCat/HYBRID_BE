@@ -3,6 +3,7 @@ using Google.Apis.Auth;
 using Hybrid.Repositories.Base;
 using Hybrid.Repositories.Models;
 using Hybrid.Repositories.Repos;
+using Hybrid.Services.Constant;
 using Hybrid.Services.Helpers;
 using Hybrid.Services.ViewModel;
 using Microsoft.Extensions.Configuration;
@@ -21,15 +22,19 @@ namespace Hybrid.Services.Services
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task<int> UpdateUserAccount(User user);
         Task<(bool, string)> ResetPasswordAsync(string email);
+        Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
+
     }
 
     public class UserService : IUserService
     {
         private readonly UserRepository _userRepo;
+        private readonly UnitOfWork _unitOfWork;
 
-        public UserService(UserRepository userRepo)
+        public UserService(UserRepository userRepo, UnitOfWork unitOfWork)
         {
             _userRepo = userRepo;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -86,7 +91,7 @@ namespace Hybrid.Services.Services
                 IsActive = true,
                 RoleId = "1",
             };
-            await _userRepo.CreateAsync(newUser);   
+            await _userRepo.CreateAsync(newUser);
             newUser = await _userRepo
                 .GetFirstWithIncludeAsync(x => x.UserId == newUser.UserId, [x => x.Role]);
 
@@ -144,6 +149,28 @@ namespace Hybrid.Services.Services
         public async Task<int> UpdateUserAccount(User user)
         {
             return await _userRepo.UpdateAsync(user);
+        }
+
+        public async Task<(bool, string)> SignUpUserAccount(SignUpRequest request)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var hashedPassword = Sha256Encoding.ComputeSHA256Hash(request.Password + HybridVariables.SecretString);
+                request.Password = hashedPassword;
+
+                //Not have ID yet
+                var newUser = request.Map_SignUpVM_To_User();
+
+                await _unitOfWork.UserRepo.CreateAsync(newUser);
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.Write(ex.Message);
+            }
+
         }
     }
 }

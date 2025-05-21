@@ -14,10 +14,12 @@ namespace Hybrid.Repositories.Base
         private readonly HybridDBContext _context;
         private IDbContextTransaction? _transaction;
 
+        public UserRepository UserRepo { get; }
 
-        public UnitOfWork(HybridDBContext context)
+        public UnitOfWork(HybridDBContext context, UserRepository userRepo)
         {
             _context = context;
+            UserRepo = userRepo;
         }
 
         public async Task BeginTransactionAsync()
