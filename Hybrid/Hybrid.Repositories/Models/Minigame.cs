@@ -13,7 +13,7 @@ public partial class Minigame
 
     public string TeacherId { get; set; }
 
-    public string ThumbnailIimage { get; set; }
+    public string ThumbnailImage { get; set; }
 
     public string DataText { get; set; }
 

@@ -127,9 +127,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.ThumbnailIimage)
-                .IsUnicode(false)
-                .HasColumnName("ThumbnailIImage");
+            entity.Property(e => e.ThumbnailImage).IsUnicode(false);
 
             entity.HasOne(d => d.Course).WithMany(p => p.Minigames)
                 .HasForeignKey(d => d.CourseId)
@@ -350,6 +348,16 @@ public partial class HybridDBContext : DbContext
                 .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SupscriptionExtentionOrder_TransactionHistory");
+
+            entity.HasOne(d => d.StudentSupscription).WithMany(p => p.SupscriptionExtentionOrders)
+                .HasForeignKey(d => new { d.UserId, d.TierId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SupscriptionExtentionOrder_StudentSupscription");
+
+            entity.HasOne(d => d.TeacherSupscription).WithMany(p => p.SupscriptionExtentionOrders)
+                .HasForeignKey(d => new { d.UserId, d.TierId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SupscriptionExtentionOrder_TeacherSupscription");
         });
 
         modelBuilder.Entity<Teacher>(entity =>

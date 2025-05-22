@@ -16,6 +16,7 @@ public partial class TeacherSupscription
     public DateTime EndDate { get; set; }
 
     public bool IsActive { get; set; }
+    public virtual ICollection<SupscriptionExtentionOrder> SupscriptionExtentionOrders { get; set; } = new List<SupscriptionExtentionOrder>();
 
     public virtual Teacher Teacher { get; set; }
 

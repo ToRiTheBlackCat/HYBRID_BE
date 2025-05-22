@@ -15,5 +15,9 @@ public partial class SupscriptionExtentionOrder
 
     public int Days { get; set; }
 
+    public virtual StudentSupscription StudentSupscription { get; set; }
+
+    public virtual TeacherSupscription TeacherSupscription { get; set; }
+
     public virtual TransactionHistory Transaction { get; set; }
 }
