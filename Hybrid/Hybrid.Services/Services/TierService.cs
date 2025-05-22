@@ -17,13 +17,13 @@ namespace Hybrid.Services.Services
         Task<List<TeacherTier>> GetAllTierOfTeacher();
         Task<TierResponse?> GetTierOfStudentById(string tierId);
         Task<TierResponse?> GetTierOfTeacherById(string tierId);
-
+        Task<(bool, string)> UpgradeTierOfUser(UpgradeTierRequest request);
 
     }
     public class TierService : ITierService
     {
-        private  StudentTierRepository _studentTierRepo => _unitOfWork.StudentTierRepo;
-        private  TeacherTierRepository _teacherTierRepo => _unitOfWork.TeacherTierRepo;
+        private StudentTierRepository _studentTierRepo => _unitOfWork.StudentTierRepo;
+        private TeacherTierRepository _teacherTierRepo => _unitOfWork.TeacherTierRepo;
 
         private readonly UnitOfWork _unitOfWork;
 
@@ -55,6 +55,30 @@ namespace Hybrid.Services.Services
             var tier = await _teacherTierRepo.GetByIdAsync(tierId);
             var tierResponse = tier?.Map_TeacherTier_To_TierResponse();
             return tierResponse;
+        }
+
+        public async Task<(bool, string)> UpgradeTierOfUser(UpgradeTierRequest request)
+        {
+            if (request.IsTeacher)
+            {
+                var foundTeacher = await _unitOfWork.TeacherRepo.GetByIdAsync(request.UserId);
+                if (foundTeacher == null)
+                    return (false, "Cannot find teacher with that Id");
+
+                foundTeacher.TierId = request.TierId;
+                await _unitOfWork.TeacherRepo.UpdateAsync(foundTeacher);
+                return (true, "Upgrade success");
+            }
+            else
+            {
+                var foundStudent = await _unitOfWork.StudentRepo.GetByIdAsync(request.UserId);
+                if (foundStudent == null)
+                    return (false, "Cannot find student with that Id");
+
+                foundStudent.TierId = request.TierId;
+                await _unitOfWork.StudentRepo.UpdateAsync(foundStudent);
+                return (true, "Upgrade success");
+            }
         }
     }
 }

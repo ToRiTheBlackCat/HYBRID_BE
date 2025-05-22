@@ -23,6 +23,7 @@ namespace Hybrid.Services.Services
         Task<int> UpdateUserAccount(User user);
         Task<(bool, string)> ResetPasswordAsync(string email);
         Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
+        Task<User?> GetUserByIdAsync(string userId);
 
     }
 
@@ -193,6 +194,11 @@ namespace Hybrid.Services.Services
                 Console.Write(ex.Message);
                 return (false, "SignUp fail");
             }
+        }
+
+        public async Task<User?> GetUserByIdAsync(string userId)
+        {
+            return await _unitOfWork.UserRepo.GetByIdAsync(userId);
         }
     }
 }
