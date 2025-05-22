@@ -90,5 +90,15 @@ namespace Hybrid.Services.Helpers
                 Description = teacherTier.Description.Trim()
             };
         }
+
+        public static SupscriptionExtentionOrder Map_SupscriptionExtentionOrderRequest_To_SupscriptionExtentionOrder(this SupscriptionExtentionOrderRequest supscriptionExtentionOrderRequest)
+        {
+            return new SupscriptionExtentionOrder
+            {
+                UserId = supscriptionExtentionOrderRequest.UserId.Trim(),
+                TierId = supscriptionExtentionOrderRequest.TierId.Trim(),
+                TransactionId = supscriptionExtentionOrderRequest.TransactionId.Trim(),
+            };
+        }
     }
 }

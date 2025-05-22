@@ -13,8 +13,8 @@ namespace Hybrid.Services.Services
 {
     public interface ISupscriptionExtentionService
     {
-        Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrder request);
-        Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrder request);
+        Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrderRequest request);
+        Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrderRequest request);
     }
     public class SupscriptionExtentionService : ISupscriptionExtentionService
     {
@@ -36,14 +36,15 @@ namespace Hybrid.Services.Services
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrder request)
+        public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrderRequest request)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _unitOfWork.SupscriptionExtentionRepo.CreateAsync(request);
+                var newSupscriptionOrder = request.Map_SupscriptionExtentionOrderRequest_To_SupscriptionExtentionOrder();
+                await _unitOfWork.SupscriptionExtentionRepo.CreateAsync(newSupscriptionOrder);
 
-                var newStudentSupscription = request.Map_SupscriptionExtentionOrder_To_StudentSupscription();
+                var newStudentSupscription = newSupscriptionOrder.Map_SupscriptionExtentionOrder_To_StudentSupscription();
 
                 await _unitOfWork.StudentSupscriptionRepo.CreateAsync(newStudentSupscription);
 
@@ -67,14 +68,15 @@ namespace Hybrid.Services.Services
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrder request)
+        public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrderRequest request)
         {
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
-                await _unitOfWork.SupscriptionExtentionRepo.CreateAsync(request);
+                var newSupscriptionOrder = request.Map_SupscriptionExtentionOrderRequest_To_SupscriptionExtentionOrder();
+                await _unitOfWork.SupscriptionExtentionRepo.CreateAsync(newSupscriptionOrder);
 
-                var newTeacherSupscription = request.Map_SupscriptionExtentionOrder_To_TeacherSupscription();
+                var newTeacherSupscription = newSupscriptionOrder.Map_SupscriptionExtentionOrder_To_TeacherSupscription();
 
                 await _unitOfWork.TeacherSupscriptionRepo.CreateAsync(newTeacherSupscription);
 
