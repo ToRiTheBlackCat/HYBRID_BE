@@ -28,12 +28,11 @@ namespace Hybrid.Services.Services
 
     public class UserService : IUserService
     {
-        private readonly UserRepository _userRepo;
+        private UserRepository _userRepo => _unitOfWork.UserRepo;
         private readonly UnitOfWork _unitOfWork;
 
-        public UserService(UserRepository userRepo, UnitOfWork unitOfWork)
+        public UserService(UnitOfWork unitOfWork)
         {
-            _userRepo = userRepo;
             _unitOfWork = unitOfWork;
         }
 

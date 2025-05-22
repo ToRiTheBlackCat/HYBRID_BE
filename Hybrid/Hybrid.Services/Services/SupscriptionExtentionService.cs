@@ -19,12 +19,11 @@ namespace Hybrid.Services.Services
     public class SupscriptionExtentionService : ISupscriptionExtentionService
     {
 
-        private readonly SupscriptionExtentionRepository _supscriptionExtentionRepo;
+        private  SupscriptionExtentionRepository _supscriptionExtentionRepo => _unitOfWork.SupscriptionExtentionRepo;
         private readonly UnitOfWork _unitOfWork;
 
-        public SupscriptionExtentionService(SupscriptionExtentionRepository supscriptionExtentionRepo, UnitOfWork unitOfWork)
+        public SupscriptionExtentionService(UnitOfWork unitOfWork)
         {
-            _supscriptionExtentionRepo = supscriptionExtentionRepo;
             _unitOfWork = unitOfWork;
         }
 

@@ -22,17 +22,13 @@ namespace Hybrid.Services.Services
     }
     public class TierService : ITierService
     {
-        private readonly StudentTierRepository _studentTierRepo;
-        private readonly TeacherTierRepository _teacherTierRepo;
+        private  StudentTierRepository _studentTierRepo => _unitOfWork.StudentTierRepo;
+        private  TeacherTierRepository _teacherTierRepo => _unitOfWork.TeacherTierRepo;
 
         private readonly UnitOfWork _unitOfWork;
 
-        public TierService(StudentTierRepository studentTierRepo,
-                            TeacherTierRepository teacherTierRepo,
-                            UnitOfWork unitOfWork)
+        public TierService(UnitOfWork unitOfWork)
         {
-            _studentTierRepo = studentTierRepo;
-            _teacherTierRepo = teacherTierRepo;
             _unitOfWork = unitOfWork;
         }
         public async Task<List<StudentTier>> GetAllTierOfStudent()
