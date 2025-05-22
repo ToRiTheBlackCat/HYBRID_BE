@@ -17,6 +17,8 @@ public partial class User
 
     public string RoleId { get; set; }
 
+    public string ResetCode { get; set; }
+
     public string RefreshToken { get; set; }
 
     public DateTime? RefreshTokenExpiryTime { get; set; }

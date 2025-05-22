@@ -320,6 +320,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.TierName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -425,6 +426,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.TierName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -470,6 +472,9 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(255);
             entity.Property(e => e.RefreshToken).HasMaxLength(512);
             entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("datetime");
+            entity.Property(e => e.ResetCode)
+                .HasMaxLength(100)
+                .IsFixedLength();
             entity.Property(e => e.RoleId)
                 .IsRequired()
                 .HasMaxLength(1)

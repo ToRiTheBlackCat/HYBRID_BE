@@ -11,6 +11,8 @@ public partial class TeacherTier
 
     public string TierName { get; set; }
 
+    public string Description { get; set; }
+
     public virtual ICollection<TeacherSupscription> TeacherSupscriptions { get; set; } = new List<TeacherSupscription>();
 
     public virtual ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
