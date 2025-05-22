@@ -21,12 +21,11 @@ namespace Hybrid.Services.Services
 
     public class TransactionService : ITransactionService
     {
-        private readonly TransactionRepository _transactionRepo;
+        private TransactionRepository _transactionRepo => _unitOfWork.TransactionRepo;
         private readonly UnitOfWork _unitOfWork;
 
-        public TransactionService(TransactionRepository transactionRepo, UnitOfWork unitOfWork)
+        public TransactionService(UnitOfWork unitOfWork)
         {
-            _transactionRepo = transactionRepo;
             _unitOfWork = unitOfWork;
         }
         public async Task<(bool, string, string)> CreateTransactionHistory(TransactionRequest request)

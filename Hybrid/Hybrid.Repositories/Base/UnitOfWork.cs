@@ -20,26 +20,23 @@ namespace Hybrid.Repositories.Base
         public TransactionRepository TransactionRepo { get; }
         public SupscriptionExtentionRepository SupscriptionExtentionRepo { get; }
         public StudentSupscriptionRepository StudentSupscriptionRepo { get; }
+        public StudentTierRepository StudentTierRepo { get; }
+        public TeacherTierRepository TeacherTierRepo { get; }
 
         public TeacherSupscriptionRepository TeacherSupscriptionRepo { get; }
 
-        public UnitOfWork(HybridDBContext context,
-                          UserRepository userRepo,
-                          StudentRepository studentRepo,
-                          TeacherRepository teacherRepo,
-                          TransactionRepository transactionRepo,
-                          StudentSupscriptionRepository studentSupscriptionRepo,
-                          TeacherSupscriptionRepository teacherSupscriptionRepo,
-                          SupscriptionExtentionRepository supscriptionExtentionRepo)
+        public UnitOfWork(HybridDBContext context)
         {
             _context = context;
-            UserRepo = userRepo;
-            StudentRepo = studentRepo;
-            TeacherRepo = teacherRepo;
-            TransactionRepo = transactionRepo;
-            StudentSupscriptionRepo = studentSupscriptionRepo;
-            TeacherSupscriptionRepo = teacherSupscriptionRepo;
-            SupscriptionExtentionRepo = supscriptionExtentionRepo;
+            UserRepo = new(_context);
+            StudentRepo = new(_context);
+            TeacherRepo = new(_context);
+            TransactionRepo = new(_context);
+            StudentSupscriptionRepo = new(_context);
+            TeacherSupscriptionRepo = new(_context);
+            SupscriptionExtentionRepo = new(_context);
+            StudentTierRepo = new(_context);
+            TeacherTierRepo = new(_context);
         }
 
         public async Task BeginTransactionAsync()
