@@ -53,7 +53,7 @@ public partial class HybridDBContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public static string GetConnectionString(string connectionStringName)
     {
-        string envVarName = $"ConnectionStrings__{connectionStringName}";
+        string envVarName = $"ConnectionStrings__DefaultConnection={connectionStringName}";
         string? connectionString = Environment.GetEnvironmentVariable(envVarName);
 
         if (string.IsNullOrEmpty(connectionString))
