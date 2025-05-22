@@ -3,8 +3,11 @@ using Hybrid.Repositories.Base;
 using Hybrid.Services.Helpers;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Hybrid.WebAPI.Controllers
 {
@@ -21,6 +24,7 @@ namespace Hybrid.WebAPI.Controllers
             _jwtAuth = jwtAuth;
             _userService = userService;
         }
+
 
         /// <summary>
         /// API_Login
@@ -109,13 +113,13 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        [HttpPost("reset-pass")]
-        public async Task<ActionResult<LoginResponse?>> PasswordReset([FromBody] string email)
+        [HttpPost("request-reset")]
+        public async Task<ActionResult> RequestPasswordReset([FromBody][EmailAddress] string email)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var result = await _userService.ResetPasswordAsync(email);
+            var result = await _userService.RequestResetPasswordAsync(email);
             return Ok(new
             {
                 Success = result.Item1,
@@ -123,6 +127,27 @@ namespace Hybrid.WebAPI.Controllers
             });
         }
 
+        [HttpPost("confirm-reset")]
+        public async Task<ActionResult<LoginResponse?>> ConfirmPasswordReset([FromBody] ConfirmResestRequest resestRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var user = await _userService.GetUserByEmailAsync(resestRequest.Email);
+
+            if (user == null)
+            {
+                return NotFound($"User with email {resestRequest.Email} was not found.");
+            }
+
+            var result = await _userService.ConfirmResetPasswordAsync(resestRequest);
+
+            return Ok(new
+            {
+                Success = result.Item1,
+                Message = result.Item2
+            });
+        }
 
         /// <summary>
         /// API_Refresh Token 

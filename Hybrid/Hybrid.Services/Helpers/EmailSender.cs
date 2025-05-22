@@ -12,7 +12,7 @@ namespace Hybrid.Services.Helpers
 {
     public static class EmailSender
     {
-        public static void SendPasswordReset(string toEmail)
+        public static string SendPasswordReset(string toEmail)
         {
             var email = HybridVariables.GmailEmail ?? "";
             var password = HybridVariables.GmailAppPassword ?? "";
@@ -24,23 +24,26 @@ namespace Hybrid.Services.Helpers
                 EnableSsl = true,
             };
 
+            var resetCode = GenerateSecureRandomString();
             var mailMessage = new MailMessage
             {
                 From = new MailAddress(email),
                 Subject = "Hybrid E-learning Password Reset.",
-                Body = $"This is the code for reseting the password: {GenerateSecureRandomString()}",
+                Body = $"This is the code for reseting the password: {resetCode}",
                 IsBodyHtml = false,
             };
 
             mailMessage.To.Add(toEmail);
 
             smtpClient.Send(mailMessage);
+
+            return resetCode;
         }
 
         private static string GenerateSecureRandomString()
         {
             var length = int.Parse(HybridVariables.ResetCodeLength!);
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             using var rng = RandomNumberGenerator.Create();
             var result = new char[length];
             var buffer = new byte[sizeof(uint)];

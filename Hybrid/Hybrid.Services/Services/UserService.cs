@@ -20,10 +20,12 @@ namespace Hybrid.Services.Services
         Task<User?> Authenticate(LoginRequest loginRequest);
         Task<User?> AuthenticateGoogle(string token);
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
+        Task<User?> GetUserByEmailAsync(string email);
         Task<int> UpdateUserAccount(User user);
-        Task<(bool, string)> ResetPasswordAsync(string email);
         Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
-
+        Task<(bool, string)> RequestResetPasswordAsync(string email);
+        Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest);
+        Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request);
     }
 
     public class UserService : IUserService
@@ -69,7 +71,7 @@ namespace Hybrid.Services.Services
                     Audience = new[] { HybridVariables.ClientId }
                 });
             }
-            catch (InvalidJwtException)
+            catch (InvalidJwtException ex)
             {
                 return null;
             }
@@ -90,7 +92,21 @@ namespace Hybrid.Services.Services
                 IsActive = true,
                 RoleId = "1",
             };
-            await _userRepo.CreateAsync(newUser);
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                await _userRepo.CreateAsync(newUser);
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+
             newUser = await _userRepo
                 .GetFirstWithIncludeAsync(x => x.UserId == newUser.UserId, [x => x.Role]);
 
@@ -112,13 +128,26 @@ namespace Hybrid.Services.Services
         }
 
         /// <summary>
+        /// FUNC_GetUserById
+        /// Created By: TuanCA
+        /// Created Date:22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _userRepo
+                .GetFirstWithIncludeAsync(x => x.Email.Equals(email), x => x.Role);
+        }
+
+        /// <summary>
         /// FUNC_ResetPassword
         /// Created By: TuanCASE
         /// Created Date: 20/5/2025
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<(bool, string)> ResetPasswordAsync(string email)
+        public async Task<(bool, string)> RequestResetPasswordAsync(string email)
         {
             (bool, string) result = new(false, string.Empty);
             var user = await _userRepo.GetUserByMailAsync(email);
@@ -129,10 +158,65 @@ namespace Hybrid.Services.Services
                 return result;
             }
 
-            EmailSender.SendPasswordReset(user.Email);
+            // Attempts to create reset code
+            try
+            {
+                var resetCode = EmailSender.SendPasswordReset(user.Email); // Send to email
 
-            result.Item1 = true;
-            result.Item2 = $"Reset code successfully sent to: {user.Email}";
+                await _unitOfWork.BeginTransactionAsync();
+
+                user.ResetCode = Sha256Encoding.ComputeSHA256Hash(HybridVariables.SecretString + resetCode);
+                await _unitOfWork.UserRepo.UpdateAsync(user);
+
+                await _unitOfWork.CommitTransactionAsync();
+                result.Item1 = true;
+                result.Item2 = $"Reset code successfully sent to: {user.Email}";
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                result.Item2 = "Failed to send/create Password reset code. " + ex.InnerException;
+            }
+
+            return result;
+        }
+
+        public async Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest)
+        {
+            var result = (false, "");
+            var userRepo = _unitOfWork.UserRepo;
+            resestRequest.ResetCode = Sha256Encoding.ComputeSHA256Hash(HybridVariables.SecretString + resestRequest.ResetCode);
+
+            var user = await userRepo.GetFirstWithIncludeAsync(x =>
+                x.Email.Equals(resestRequest.Email) &&
+                x.ResetCode == resestRequest.ResetCode
+            );
+
+            if (user != null)
+            {
+                try
+                {
+                    await _unitOfWork.BeginTransactionAsync();
+
+                    user.Password = Sha256Encoding.ComputeSHA256Hash(resestRequest.Password + HybridVariables.SecretString);
+                    await userRepo.UpdateAsync(user);
+
+                    await _unitOfWork.CommitTransactionAsync();
+                    result = (true, "Password reset successful.");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                    result.Item2 = "Password reset failed: " + ex.InnerException;
+                }
+            }
+            else
+            {
+                result.Item2 = "Reset code is invalid.";
+            }
+
             return result;
         }
 
@@ -193,6 +277,67 @@ namespace Hybrid.Services.Services
                 Console.Write(ex.Message);
                 return (false, "SignUp fail");
             }
+        }
+
+        public async Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request)
+        {
+            var result = new UpdateProfileResponse();
+            result.Success = false;
+
+            var user = await _unitOfWork.UserRepo.GetFirstWithIncludeAsync(x =>
+                x.UserId == request.UserId
+            );
+
+            if (user == null)
+            {
+                result.Message = "User not found.";
+                return result;
+            }
+
+            await _unitOfWork.BeginTransactionAsync();
+
+            if (request.IsTeacher)
+            {
+                var teacher = await _unitOfWork.TeacherRepo.GetFirstWithIncludeAsync(
+                    x => x.UserId == request.UserId,
+                    x => x.Tier
+                );
+
+                if (teacher == null)
+                {
+                    result.Message = "User have no Teacher account";
+                    return result;
+                }
+
+                request.AssignValueTo(teacher);
+                _unitOfWork.TeacherRepo.Update(teacher);
+                result.ProfileView = teacher?.ToUpdateProfileView();
+            }
+            else
+            {
+                var student = await _unitOfWork.StudentRepo.GetFirstWithIncludeAsync(
+                    x => x.UserId == request.UserId,
+                    x => x.Tier
+                );
+
+                if (student == null)
+                {
+                    result.Message = "User have no Student account";
+                    return result;
+                }
+
+                request.AssignValueTo(student);
+                _unitOfWork.StudentRepo.Update(student);
+                result.ProfileView = student?.ToUpdateProfileView();
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+
+            await _unitOfWork.CommitTransactionAsync();
+            result.Success = true;
+            result.Message = "Account " + (request.IsTeacher ? "Teacher" : "Student") + " profile updated successfully.";
+
+            return result;
         }
     }
 }

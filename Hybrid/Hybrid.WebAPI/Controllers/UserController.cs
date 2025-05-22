@@ -38,5 +38,28 @@ namespace Hybrid.WebAPI.Controllers
                 message
             });
         }
+
+        /// <summary>
+        /// API_UpdateProfile
+        /// Created By: TuanCA
+        /// Created Date: 21/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("update-profile")]
+        public async Task<ActionResult<UpdateProfileResponse?>> UpdateProfile([FromBody] UpdateProfileRequest updateRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.UpdateProfileAsync(updateRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
     }
 }
