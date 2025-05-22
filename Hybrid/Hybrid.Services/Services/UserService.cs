@@ -23,6 +23,7 @@ namespace Hybrid.Services.Services
         Task<int> UpdateUserAccount(User user);
         Task<(bool, string)> ResetPasswordAsync(string email);
         Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
+        Task<User?> GetUserByIdAsync(string userId);
 
     }
 
@@ -193,6 +194,20 @@ namespace Hybrid.Services.Services
                 Console.Write(ex.Message);
                 return (false, "SignUp fail");
             }
+        }
+
+        /// <summary>
+        /// FUNC_GetUserByIdAsync
+        /// userId_string
+        /// User?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<User?> GetUserByIdAsync(string userId)
+        {
+            return await _unitOfWork.UserRepo.GetByIdAsync(userId);
         }
     }
 }

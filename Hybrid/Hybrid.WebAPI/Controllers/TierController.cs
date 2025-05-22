@@ -10,9 +10,11 @@ namespace Hybrid.WebAPI.Controllers
     public class TierController : ControllerBase
     {
         private readonly ITierService _tierService;
-        public TierController(ITierService tierService)
+        private readonly IUserService _userService;
+        public TierController(ITierService tierService, IUserService userService)
         {
             _tierService = tierService;
+            _userService = userService;
         }
 
         /// <summary>
@@ -83,6 +85,29 @@ namespace Hybrid.WebAPI.Controllers
 
             var tier = await _tierService.GetTierOfTeacherById(tierId);
             return Ok(tier);
+        }
+
+        /// <summary>
+        /// API_UpgradeTier
+        /// UpgradeTierRequest_ViewModel
+        /// TierResponse_ViewModel
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("upgrade")]
+        public async Task<ActionResult> UpgradeTier([FromBody] UpgradeTierRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (isSuccess, message) = await _tierService.UpgradeTierOfUser(request);
+            return Ok(new
+            {
+                isSuccess,
+                message
+            });
         }
     }
 }
