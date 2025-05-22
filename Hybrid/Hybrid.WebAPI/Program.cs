@@ -1,5 +1,7 @@
 using Hybrid.Repositories.Base;
 using Hybrid.Repositories.Models;
+using Hybrid.Repositories.Repos;
+using Hybrid.Services.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Builder.Extensions;
@@ -8,7 +10,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
-
+using DotNetEnv;
+using Hybrid.Services.Helpers;
+using System;
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -16,6 +21,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
@@ -45,10 +52,13 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Register for DBContext
+var connectionString = HybridVariables.ConnectionString;
+
+//// Register for DBContext
 builder.Services.AddDbContext<HybridDBContext>(options =>
 {
-    options.UseSqlServer(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"));
+    options.UseSqlServer(connectionString)
+           .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 
@@ -77,7 +87,7 @@ builder.Services.AddAuthentication(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"] ?? "")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(HybridVariables.JwtSecret)),
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
@@ -87,10 +97,30 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Register for Services
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ISupscriptionExtentionService, SupscriptionExtentionService>();
+builder.Services.AddScoped<ITierService, TierService>();
+
+// Register for Repos
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<StudentRepository>();
+builder.Services.AddScoped<TeacherRepository>();
+builder.Services.AddScoped<StudentTierRepository>();
+builder.Services.AddScoped<TeacherTierRepository>();
+builder.Services.AddScoped<TransactionRepository>();
+builder.Services.AddScoped<SupscriptionExtentionRepository>();
+builder.Services.AddScoped<StudentSupscriptionRepository>();
+builder.Services.AddScoped<TeacherSupscriptionRepository>();
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+// Register for Helper Services
+builder.Services.AddScoped<JwtAuthentication>();
+
 
 
 var app = builder.Build();
@@ -99,6 +129,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+    //app.UseSwaggerUI();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "HYBRID_API v1");
@@ -108,6 +139,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowAllOrigins");
+
 app.UseAuthentication();
 app.UseAuthorization();
 

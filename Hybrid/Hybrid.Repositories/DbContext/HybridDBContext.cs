@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Hybrid.Repositories.Models;
 
@@ -50,6 +51,18 @@ public partial class HybridDBContext : DbContext
     public virtual DbSet<TransactionHistory> TransactionHistories { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public static string GetConnectionString(string connectionStringName)
+    {
+        string envVarName = $"ConnectionStrings__{connectionStringName}";
+        string? connectionString = Environment.GetEnvironmentVariable(envVarName);
+
+        if (string.IsNullOrEmpty(connectionString))
+        {
+            throw new InvalidOperationException($"Environment variable '{envVarName}' not found.");
+        }
+
+        return connectionString;
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -114,9 +127,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
-            entity.Property(e => e.ThumbnailIimage)
-                .IsUnicode(false)
-                .HasColumnName("ThumbnailIImage");
+            entity.Property(e => e.ThumbnailImage).IsUnicode(false);
 
             entity.HasOne(d => d.Course).WithMany(p => p.Minigames)
                 .HasForeignKey(d => d.CourseId)
@@ -307,6 +318,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.TierName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -336,6 +348,16 @@ public partial class HybridDBContext : DbContext
                 .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SupscriptionExtentionOrder_TransactionHistory");
+
+            entity.HasOne(d => d.StudentSupscription).WithMany(p => p.SupscriptionExtentionOrders)
+                .HasForeignKey(d => new { d.UserId, d.TierId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SupscriptionExtentionOrder_StudentSupscription");
+
+            entity.HasOne(d => d.TeacherSupscription).WithMany(p => p.SupscriptionExtentionOrders)
+                .HasForeignKey(d => new { d.UserId, d.TierId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_SupscriptionExtentionOrder_TeacherSupscription");
         });
 
         modelBuilder.Entity<Teacher>(entity =>
@@ -412,6 +434,7 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+            entity.Property(e => e.Description).HasMaxLength(255);
             entity.Property(e => e.TierName)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -457,6 +480,9 @@ public partial class HybridDBContext : DbContext
                 .HasMaxLength(255);
             entity.Property(e => e.RefreshToken).HasMaxLength(512);
             entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("datetime");
+            entity.Property(e => e.ResetCode)
+                .HasMaxLength(100)
+                .IsFixedLength();
             entity.Property(e => e.RoleId)
                 .IsRequired()
                 .HasMaxLength(1)

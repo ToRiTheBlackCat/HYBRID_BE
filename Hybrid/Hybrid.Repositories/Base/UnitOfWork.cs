@@ -1,4 +1,5 @@
 ﻿using Hybrid.Repositories.Models;
+using Hybrid.Repositories.Repos;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -13,10 +14,34 @@ namespace Hybrid.Repositories.Base
         private readonly HybridDBContext _context;
         private IDbContextTransaction? _transaction;
 
-        public UnitOfWork(HybridDBContext context)
+        public UserRepository UserRepo { get; }
+        public StudentRepository StudentRepo { get; }
+        public TeacherRepository TeacherRepo { get; }
+        public TransactionRepository TransactionRepo { get; }
+        public SupscriptionExtentionRepository SupscriptionExtentionRepo { get; }
+        public StudentSupscriptionRepository StudentSupscriptionRepo { get; }
+
+        public TeacherSupscriptionRepository TeacherSupscriptionRepo { get; }
+
+        public UnitOfWork(HybridDBContext context,
+                          UserRepository userRepo,
+                          StudentRepository studentRepo,
+                          TeacherRepository teacherRepo,
+                          TransactionRepository transactionRepo,
+                          StudentSupscriptionRepository studentSupscriptionRepo,
+                          TeacherSupscriptionRepository teacherSupscriptionRepo,
+                          SupscriptionExtentionRepository supscriptionExtentionRepo)
         {
             _context = context;
+            UserRepo = userRepo;
+            StudentRepo = studentRepo;
+            TeacherRepo = teacherRepo;
+            TransactionRepo = transactionRepo;
+            StudentSupscriptionRepo = studentSupscriptionRepo;
+            TeacherSupscriptionRepo = teacherSupscriptionRepo;
+            SupscriptionExtentionRepo = supscriptionExtentionRepo;
         }
+
         public async Task BeginTransactionAsync()
         {
             if (_transaction == null)
@@ -44,6 +69,11 @@ namespace Hybrid.Repositories.Base
                 await _transaction.DisposeAsync();
                 _transaction = null;
             }
+        }
+
+        public async Task<int> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync();
         }
 
         public void Dispose()

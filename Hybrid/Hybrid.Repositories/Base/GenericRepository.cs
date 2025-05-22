@@ -18,14 +18,18 @@ namespace Hybrid.Repositories.Base
         T? GetById(string id);
         Task<T?> GetByIdAsync(string id);
         Task<T?> GetByIdWithIncludeAsync(int TId, string typeId, params Expression<Func<T, object>>[] includeProperties);
-        Task AddAsync(T entity);
+
+        void Create(T entity);
+        Task<int> CreateAsync(T entity);
         void Update(T entity);
+        Task<int> UpdateAsync(T entity);
         void Remove(T entity);
+        Task<bool> RemoveAsync(T? entity);
     }
 
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
-        protected HybridDBContext _context;
+        protected readonly HybridDBContext _context;
         protected readonly DbSet<T> _dbSet;
 
         public GenericRepository(HybridDBContext context)
@@ -118,19 +122,60 @@ namespace Hybrid.Repositories.Base
             return await query.FirstOrDefaultAsync(entity => EF.Property<int>(entity, typeId) == TId);
         }
 
-        public virtual async Task AddAsync(T entity)
+        /// <summary>
+        /// Get the first element that matches the predicate
+        /// and Include the objects that matches the expression array
+        /// </summary>
+        /// <param name="predicate"></param>
+        /// <param name="includeProperties">Include expression array</param>
+        /// <returns>A matching entity or null if not found"</returns>
+        public async Task<T?> GetFirstWithIncludeAsync(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includeProperties)
         {
-            await _dbSet.AddAsync(entity);
+            IQueryable<T> query = _dbSet;
+
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
-        public virtual void Update(T entity)
+        public virtual void Create(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+
+        public virtual async Task<int> CreateAsync(T entity)
+        {
+            _dbSet.Add(entity);
+            return await _context.SaveChangesAsync();
+        }
+
+        public void Update(T entity)
         {
             _dbSet.Update(entity);
         }
 
-        public virtual void Remove(T entity)
+        public async Task<int> UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            return await _context.SaveChangesAsync();
+        }
+        public void Remove(T entity)
         {
             _dbSet.Remove(entity);
+        }
+
+        public async Task<bool> RemoveAsync(T? entity)
+        {
+            if (entity == null)
+                return false;
+
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

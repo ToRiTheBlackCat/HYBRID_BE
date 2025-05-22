@@ -11,6 +11,8 @@ public partial class StudentTier
 
     public string TierName { get; set; }
 
+    public string Description { get; set; }
+
     public virtual ICollection<StudentSupscription> StudentSupscriptions { get; set; } = new List<StudentSupscription>();
 
     public virtual ICollection<Student> Students { get; set; } = new List<Student>();
