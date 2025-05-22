@@ -31,18 +31,46 @@ namespace Hybrid.Services.Services
         {
             _unitOfWork = unitOfWork;
         }
+
+        /// <summary>
+        /// FUNC_GetAllTierOfStudent
+        /// X
+        /// List<TeacherTier>
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<List<StudentTier>> GetAllTierOfStudent()
         {
             var tierlist = await _studentTierRepo.GetAllAsync();
             return tierlist.ToList();
         }
 
+        /// <summary>
+        /// FUNC_GetAllTierOfTeacher
+        /// X
+        /// List<TeacherTier>
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<List<TeacherTier>> GetAllTierOfTeacher()
         {
             var tierlist = await _teacherTierRepo.GetAllAsync();
             return tierlist.ToList();
         }
 
+        /// <summary>
+        /// FUNC_GetTierOfStudentById
+        /// tierId_String
+        /// TierResponse?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<TierResponse?> GetTierOfStudentById(string tierId)
         {
             var tier = await _studentTierRepo.GetByIdAsync(tierId);
@@ -50,6 +78,15 @@ namespace Hybrid.Services.Services
             return tierResponse;
         }
 
+        /// <summary>
+        /// FUNC_GetTierOfTeacherById
+        /// tierId_String
+        /// TierResponse?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<TierResponse?> GetTierOfTeacherById(string tierId)
         {
             var tier = await _teacherTierRepo.GetByIdAsync(tierId);
@@ -57,6 +94,15 @@ namespace Hybrid.Services.Services
             return tierResponse;
         }
 
+        /// <summary>
+        /// FUNC_UpgradeTierOfUser
+        /// UpgradeTierRequest_ViewModel
+        /// (bool, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string)> UpgradeTierOfUser(UpgradeTierRequest request)
         {
             if (request.IsTeacher)

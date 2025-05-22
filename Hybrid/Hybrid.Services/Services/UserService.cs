@@ -196,6 +196,15 @@ namespace Hybrid.Services.Services
             }
         }
 
+        /// <summary>
+        /// FUNC_GetUserByIdAsync
+        /// userId_string
+        /// User?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<User?> GetUserByIdAsync(string userId)
         {
             return await _unitOfWork.UserRepo.GetByIdAsync(userId);

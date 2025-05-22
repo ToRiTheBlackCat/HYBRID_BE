@@ -27,6 +27,15 @@ namespace Hybrid.Services.Services
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// FUNC_CreateSupscriptionExtentionOrder_Student
+        /// SupscriptionExtentionOrder
+        /// (bool, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrder request)
         {
             try
@@ -49,6 +58,15 @@ namespace Hybrid.Services.Services
             }
         }
 
+        /// <summary>
+        /// FUNC_CreateSupscriptionExtentionOrder_Teacher
+        /// SupscriptionExtentionOrder
+        /// (bool, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrder request)
         {
             try
