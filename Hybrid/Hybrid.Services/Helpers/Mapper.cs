@@ -77,7 +77,7 @@ namespace Hybrid.Services.Helpers
             {
                 TierId = studentTier.TierId.Trim(),
                 TierName = studentTier.TierName.Trim(),
-                Description = ""
+                Description = studentTier.Description.Trim()
             };
         }
 
@@ -87,7 +87,7 @@ namespace Hybrid.Services.Helpers
             {
                 TierId = teacherTier.TierId.Trim(),
                 TierName = teacherTier.TierName.Trim(),
-                Description = ""
+                Description = teacherTier.Description.Trim()
             };
         }
     }
