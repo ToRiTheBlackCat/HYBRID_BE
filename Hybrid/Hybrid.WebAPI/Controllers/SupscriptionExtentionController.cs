@@ -1,5 +1,6 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Services.Services;
+using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +26,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("create-student")]
-        public async Task<ActionResult> CreateSupscriptionExtentionOfStudent([FromBody] SupscriptionExtentionOrder request)
+        public async Task<ActionResult> CreateSupscriptionExtentionOfStudent([FromBody] SupscriptionExtentionOrderRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -48,7 +49,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("create-teacher")]
-        public async Task<ActionResult> CreateSupscriptionExtentionOfTeacher([FromBody] SupscriptionExtentionOrder request)
+        public async Task<ActionResult> CreateSupscriptionExtentionOfTeacher([FromBody] SupscriptionExtentionOrderRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
