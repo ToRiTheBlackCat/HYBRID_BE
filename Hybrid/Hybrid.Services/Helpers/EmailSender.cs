@@ -42,7 +42,7 @@ namespace Hybrid.Services.Helpers
 
         private static string GenerateSecureRandomString()
         {
-            var length = int.Parse(HybridVariables.ResetCodeLength!);
+            var length = HybridVariables.ResetCodeLength;
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             using var rng = RandomNumberGenerator.Create();
             var result = new char[length];

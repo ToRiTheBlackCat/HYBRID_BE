@@ -48,7 +48,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("profile")]
-        public async Task<ActionResult> GetProfile(GetProfileRequest request)
+        public async Task<ActionResult> GetProfile([FromQuery]GetProfileRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);

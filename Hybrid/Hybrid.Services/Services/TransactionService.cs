@@ -28,6 +28,16 @@ namespace Hybrid.Services.Services
         {
             _unitOfWork = unitOfWork;
         }
+
+        /// <summary>
+        /// FUNC_CreateTransactionHistory
+        /// TransactionRequest_ViewModel
+        /// (bool, string, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string, string)> CreateTransactionHistory(TransactionRequest request)
         {
             try
@@ -53,6 +63,15 @@ namespace Hybrid.Services.Services
             }
         }
 
+        /// <summary>
+        /// FUNC_CancelTransactionHistory
+        /// transactionHistoryId_string
+        /// (bool, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string)> CancelTransactionHistory(string transactionHistoryId)
         {
             var foundTransaction = await GetTransactionHistoryById(transactionHistoryId);
@@ -65,6 +84,15 @@ namespace Hybrid.Services.Services
             return (true, "Cancel transaction successfully");
         }
 
+        /// <summary>
+        /// FUNC_ConfirmTransactionHistory
+        /// transactionHistoryId_string
+        /// (bool, string, string)
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string, string)> ConfirmTransactionHistory(string transactionHistoryId)
         {
             var foundTransaction = await GetTransactionHistoryById(transactionHistoryId);
@@ -76,6 +104,16 @@ namespace Hybrid.Services.Services
 
             return (true, foundTransaction.TransactionId, "Confirm transaction successfully");
         }
+
+        /// <summary>
+        /// FUNC_GetTransactionHistoryById
+        /// transactionHistoryId_string
+        /// TransactionHistory?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         private async Task<TransactionHistory?> GetTransactionHistoryById(string transactionHistoryId)
         {
             var foundTransaction = await _transactionRepo.GetByIdAsync(transactionHistoryId);

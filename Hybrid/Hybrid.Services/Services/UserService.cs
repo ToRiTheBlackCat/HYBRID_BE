@@ -23,6 +23,7 @@ namespace Hybrid.Services.Services
         Task<User?> GetUserByEmailAsync(string email);
         Task<int> UpdateUserAccount(User user);
         Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
+        Task<User?> GetUserByIdAsync(string userId);
         Task<(bool, string)> RequestResetPasswordAsync(string email);
         Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest);
         Task<GetProfileResponse?> GetProfileAsync(GetProfileRequest request);
@@ -139,6 +140,20 @@ namespace Hybrid.Services.Services
         {
             return await _userRepo
                 .GetFirstWithIncludeAsync(x => x.Email.Equals(email), x => x.Role);
+        }
+
+        /// <summary>
+        /// FUNC_GetUserByIdAsync
+        /// userId_string
+        /// User?
+        /// Created By: TriNHM
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<User?> GetUserByIdAsync(string userId)
+        {
+            return await _unitOfWork.UserRepo.GetByIdAsync(userId);
         }
 
         /// <summary>
@@ -310,7 +325,7 @@ namespace Hybrid.Services.Services
             }
             else
             {
-                var student = await _unitOfWork.TeacherRepo.GetFirstWithIncludeAsync(
+                var student = await _unitOfWork.StudentRepo.GetFirstWithIncludeAsync(
                     x => x.UserId == request.UserId,
                     x => x.Tier
                 );
