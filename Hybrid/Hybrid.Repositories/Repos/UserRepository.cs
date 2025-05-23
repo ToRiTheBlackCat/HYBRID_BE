@@ -37,7 +37,7 @@ namespace Hybrid.Repositories.Repos
             var user = await _dbSet
                 .Include(x => x.Role)
                 .FirstOrDefaultAsync(x =>
-                    x.Email == email &&
+                    x.Email.Equals(email) &&
                     x.IsActive
                 );
 
