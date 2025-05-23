@@ -25,6 +25,7 @@ namespace Hybrid.Services.Services
         Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
         Task<(bool, string)> RequestResetPasswordAsync(string email);
         Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest);
+        Task<GetProfileResponse?> GetProfileAsync(GetProfileRequest request);
         Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request);
     }
 
@@ -279,6 +280,54 @@ namespace Hybrid.Services.Services
             }
         }
 
+        /// <summary>
+        /// FUNC_SignUpUserAccount
+        /// Created By: TuanCA
+        /// Created Date: 23/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<GetProfileResponse?> GetProfileAsync(GetProfileRequest request)
+        {
+            var user = await _unitOfWork.UserRepo.GetFirstWithIncludeAsync(
+                x => x.UserId == request.UserId
+            );
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            GetProfileResponse? response;
+            if (request.IsTeacher)
+            {
+                var teacher = await _unitOfWork.TeacherRepo.GetFirstWithIncludeAsync(
+                    x => x.UserId == request.UserId,
+                    x => x.Tier
+                );
+
+                response = teacher?.ToGetProfileResponse();
+            }
+            else
+            {
+                var student = await _unitOfWork.TeacherRepo.GetFirstWithIncludeAsync(
+                    x => x.UserId == request.UserId,
+                    x => x.Tier
+                );
+
+                response = student?.ToGetProfileResponse();
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// FUNC_SignUpUserAccount
+        /// Created By: TuanCA
+        /// Created Date: 23/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request)
         {
             var result = new UpdateProfileResponse();

@@ -91,6 +91,32 @@ namespace Hybrid.Services.Helpers
             };
         }
 
+        public static GetProfileResponse ToGetProfileResponse(this Teacher teacher)
+        {
+            return new GetProfileResponse()
+            {
+                UserId = teacher.UserId.Trim(),
+                FullName = teacher.FullName.Trim(),
+                Address = teacher.Address.Trim(),
+                Phone = teacher.Phone.Trim(),
+                YearOfBirth = teacher.YearOfBirth,
+                TierName = teacher.Tier.TierName.Trim(),
+            };
+        }
+
+        public static GetProfileResponse ToGetProfileResponse(this Student student)
+        {
+            return new GetProfileResponse()
+            {
+                UserId = student.UserId.Trim(),
+                FullName = student.FullName.Trim(),
+                Address = student.Address.Trim(),
+                Phone = student.Phone.Trim(),
+                YearOfBirth = student.YearOfBirth,
+                TierName = student.Tier.TierName.Trim(),
+            };
+        }
+
         public static UpdateProfileView ToUpdateProfileView(this Teacher teacher)
         {
             return new UpdateProfileView()
