@@ -24,6 +24,7 @@ namespace Hybrid.Repositories.Base
         public TeacherTierRepository TeacherTierRepo { get; }
 
         public TeacherSupscriptionRepository TeacherSupscriptionRepo { get; }
+        public MiniGameRepository MiniGameRepo { get; }
 
         public UnitOfWork(HybridDBContext context)
         {
@@ -37,6 +38,7 @@ namespace Hybrid.Repositories.Base
             SupscriptionExtentionRepo = new(_context);
             StudentTierRepo = new(_context);
             TeacherTierRepo = new(_context);
+            MiniGameRepo = new(_context);
         }
 
         public async Task BeginTransactionAsync()
