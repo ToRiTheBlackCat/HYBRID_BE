@@ -49,6 +49,7 @@ namespace Hybrid.Services.Services
             }
 
             var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfTeacherAsync(teacherId);
+            response.Minigames = minigames.Select(x => x.ToGetAllMinigameModel()).ToList();
 
             return response;
         }
