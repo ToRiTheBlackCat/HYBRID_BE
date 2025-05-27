@@ -73,7 +73,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 // Register for JWT Authentication & Authorization
 builder.Services.AddAuthentication(options =>
 {
@@ -90,8 +89,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(HybridVariables.JwtSecret)),
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
         ClockSkew = TimeSpan.Zero,
         RoleClaimType = ClaimTypes.Role
     };
@@ -102,6 +101,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ISupscriptionExtentionService, SupscriptionExtentionService>();
 builder.Services.AddScoped<ITierService, TierService>();
+builder.Services.AddScoped<IMiniGameService, MiniGameService>();
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
@@ -126,6 +126,9 @@ if (app.Environment.IsDevelopment())
     });
 
 }
+
+// Enable serving static files
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");

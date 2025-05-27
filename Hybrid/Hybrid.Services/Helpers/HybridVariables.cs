@@ -15,6 +15,6 @@ namespace Hybrid.Services.Helpers
         public static string ClientSecret => Environment.GetEnvironmentVariable("ClientSecret") ?? "";
         public static string GmailEmail => Environment.GetEnvironmentVariable("GMAIL_EMAIL") ?? "";
         public static string GmailAppPassword => Environment.GetEnvironmentVariable("GMAIL_APP_PASSWORD") ?? "";
-        public static string ResetCodeLength => Environment.GetEnvironmentVariable("RESET_CODE_LENGTH") ?? "";
+        public static int ResetCodeLength => int.Parse(Environment.GetEnvironmentVariable("RESET_CODE_LENGTH")!);
     }
 }

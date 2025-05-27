@@ -2,6 +2,7 @@
 using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace Hybrid.WebAPI.Controllers
 {
@@ -38,5 +39,50 @@ namespace Hybrid.WebAPI.Controllers
                 message
             });
         }
+
+        /// <summary>
+        /// API_UpdateProfile
+        /// Created By: TuanCA
+        /// Created Date: 23/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpGet("profile")]
+        public async Task<ActionResult> GetProfile([FromQuery]GetProfileRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.GetProfileAsync(request);
+            if (result == null)
+            {
+                return NotFound("No " + (request.IsTeacher ? "Teacher" : "Student") + " profile found.");
+            }
+
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// API_UpdateProfile
+        /// Created By: TuanCA
+        /// Created Date: 22/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("update-profile")]
+        public async Task<ActionResult<UpdateProfileResponse?>> UpdateProfile([FromBody] UpdateProfileRequest updateRequest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _userService.UpdateProfileAsync(updateRequest);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
+
     }
 }

@@ -100,5 +100,108 @@ namespace Hybrid.Services.Helpers
                 TransactionId = supscriptionExtentionOrderRequest.TransactionId.Trim(),
             };
         }
+
+        public static GetProfileResponse ToGetProfileResponse(this Teacher teacher)
+        {
+            return new GetProfileResponse()
+            {
+                UserId = teacher.UserId.Trim(),
+                FullName = teacher.FullName.Trim(),
+                Address = teacher.Address.Trim(),
+                Phone = teacher.Phone.Trim(),
+                YearOfBirth = teacher.YearOfBirth,
+                TierName = teacher.Tier.TierName.Trim(),
+            };
+        }
+
+        public static GetProfileResponse ToGetProfileResponse(this Student student)
+        {
+            return new GetProfileResponse()
+            {
+                UserId = student.UserId.Trim(),
+                FullName = student.FullName.Trim(),
+                Address = student.Address.Trim(),
+                Phone = student.Phone.Trim(),
+                YearOfBirth = student.YearOfBirth,
+                TierName = student.Tier.TierName.Trim(),
+            };
+        }
+
+        public static UpdateProfileView ToUpdateProfileView(this Teacher teacher)
+        {
+            return new UpdateProfileView()
+            {
+                UserId = teacher.UserId.Trim(),
+                FullName = teacher.FullName.Trim(),
+                Address = teacher.Address.Trim(),
+                Phone = teacher.Phone.Trim(),
+                YearOfBirth = teacher.YearOfBirth,
+                TierName = teacher.Tier.TierName.Trim(),
+            };
+        }
+
+        public static UpdateProfileView ToUpdateProfileView(this Student student)
+        {
+            return new UpdateProfileView()
+            {
+                UserId = student.UserId.Trim(),
+                FullName = student.FullName.Trim(),
+                Address = student.Address.Trim(),
+                Phone = student.Phone.Trim(),
+                YearOfBirth = student.YearOfBirth,
+                TierName = student.Tier.TierName.Trim(),
+            };
+        }
+
+        public static GetMiniGameResponse ToGetMiniGameResponse(this Minigame minigame)
+        {
+            return new GetMiniGameResponse()
+            {
+                MinigameId = minigame.MinigameId.Trim(),
+                MinigameName = minigame.MinigameName.Trim(),
+                ThumbnailImage = minigame.ThumbnailImage.Trim(),
+                TeacherId = minigame.TeacherId.Trim(),
+                TeacherName = minigame.Teacher.FullName.Trim(),
+                CourseId = minigame.CourseId.Trim(),
+                DataText = minigame.DataText.Trim(),
+                Duration = minigame.Duration,
+                ParticipantsCount = minigame.ParticipantsCount,
+                RatingScore = minigame.RatingScore,
+                TemplateId = minigame.TemplateId.Trim(),
+                TemplateName = minigame.Template?.TemplateName.Trim() ?? "",
+            };
+        }
+
+        public static GetAllMinigameModel ToGetAllMinigameModel(this Minigame minigame)
+        {
+            return new GetAllMinigameModel()
+            {
+                MinigameId = minigame.MinigameId.Trim(),
+                MinigameName = minigame.MinigameName.Trim(),
+                ThumbnailImage = minigame.ThumbnailImage.Trim(),
+                TeacherId = minigame.TeacherId.Trim(),
+                CourseId= minigame.CourseId.Trim(),
+                Duration = minigame.Duration,
+                ParticipantsCount= minigame.ParticipantsCount,
+                RatingScore = minigame.RatingScore,
+                TemplateId= minigame.TemplateId.Trim(),
+                TemplateName = minigame.Template.TemplateName.Trim()
+            };
+        }
+
+        public static AddMiniGameResponseModel ToAddMiniGameResponseModel(this Minigame minigame)
+        {
+            return new AddMiniGameResponseModel()
+            {
+                MinigameId = minigame.MinigameId.Trim(),
+                MinigameName = minigame.MinigameName.Trim(),
+                TeacherId = minigame.TeacherId.Trim(),
+                Duration = minigame.Duration,
+                TemplateId = minigame.TemplateId.Trim(),
+                TemplateName = minigame.Template.TemplateName.Trim(),
+                CourseId = minigame.CourseId.Trim(),
+                ThumbnailImage = minigame.ThumbnailImage.Trim()
+            };
+        }
     }
 }
