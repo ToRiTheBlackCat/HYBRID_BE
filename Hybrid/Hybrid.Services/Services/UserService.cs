@@ -198,6 +198,13 @@ namespace Hybrid.Services.Services
             return result;
         }
 
+        /// <summary>
+        /// FUNC_ResetPassword
+        /// Created By: TuanCASE
+        /// Created Date: 23/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest)
         {
             var result = (false, "");
@@ -322,6 +329,7 @@ namespace Hybrid.Services.Services
                 );
 
                 response = teacher?.ToGetProfileResponse();
+                
             }
             else
             {
@@ -331,6 +339,11 @@ namespace Hybrid.Services.Services
                 );
 
                 response = student?.ToGetProfileResponse();
+            }
+
+            if (response != null)
+            {
+                response.Email = user.Email;
             }
 
             return response;

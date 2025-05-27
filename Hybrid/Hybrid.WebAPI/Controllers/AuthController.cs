@@ -127,6 +127,13 @@ namespace Hybrid.WebAPI.Controllers
             });
         }
 
+        /// <summary>
+        /// API_ConfirmPasswordReset
+        /// CreatedBy: TuanCA
+        /// Created Date: 25/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpPost("confirm-reset")]
         public async Task<ActionResult<LoginResponse?>> ConfirmPasswordReset([FromBody] ConfirmResestRequest resestRequest)
         {
