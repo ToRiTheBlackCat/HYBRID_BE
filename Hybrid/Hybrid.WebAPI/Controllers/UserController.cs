@@ -22,16 +22,65 @@ namespace Hybrid.WebAPI.Controllers
         /// X
         /// Created By: TriNHM
         /// Created Date: 21/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 28/5/2025
         /// </summary>
         [HttpPost("signup")]
-        public async Task<ActionResult> SignUp([FromBody] SignUpRequest request)
+        public async Task<ActionResult> SignUpUser([FromBody] SignUpUserRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var (isSuccess, message) = await _userService.SignUpUserAccount(request);
+            var (isSuccess, userId, message) = await _userService.SignUpUserAccount(request);
+
+            return Ok(new
+            {
+                isSuccess,
+                userId,
+                message
+            });
+        }
+
+        /// <summary>
+        /// API_SignUpStudent 
+        /// SignUpTeacher_StudentRequest_ViewModel
+        /// X
+        /// Created By: TriNHM
+        /// Created Date: 28/5/2025
+        /// Updated By: 
+        /// Updated Date: 
+        /// </summary>
+        [HttpPost("signup-student")]
+        public async Task<ActionResult> SignUpStudent([FromBody] SignUpTeacher_StudentRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (isSuccess, message) = await _userService.SignUpStudentAccount(request);
+
+            return Ok(new
+            {
+                isSuccess,
+                message
+            });
+        }
+
+        /// <summary>
+        /// API_SignUpTeacher 
+        /// SignUpTeacher_StudentRequest_ViewModel
+        /// X
+        /// Created By: TriNHM
+        /// Created Date: 28/5/2025
+        /// Updated By: 
+        /// Updated Date: 
+        /// </summary>
+        [HttpPost("signup-teacher")]
+        public async Task<ActionResult> SignUpTeacher([FromBody] SignUpTeacher_StudentRequest request)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (isSuccess, message) = await _userService.SignUpTeacherAccount(request);
 
             return Ok(new
             {
