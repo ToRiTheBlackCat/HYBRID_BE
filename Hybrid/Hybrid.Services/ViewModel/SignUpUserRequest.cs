@@ -16,8 +16,6 @@ namespace Hybrid.Services.ViewModel
         public string Password { get; set; }
         [Required]
         public string RoleId { get; set; }
-        [Required]
-        public string TierId { get; set; }
 
     }
     public class SignUpTeacher_StudentRequest
