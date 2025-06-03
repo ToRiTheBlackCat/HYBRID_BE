@@ -22,9 +22,9 @@ namespace Hybrid.Repositories.Base
         public StudentSupscriptionRepository StudentSupscriptionRepo { get; }
         public StudentTierRepository StudentTierRepo { get; }
         public TeacherTierRepository TeacherTierRepo { get; }
-
         public TeacherSupscriptionRepository TeacherSupscriptionRepo { get; }
         public MiniGameRepository MiniGameRepo { get; }
+        public CourseRepository CourseRepo { get; }
         public MinigameTemplateRepository MinigameTemplateRepo { get; }
 
         public UnitOfWork(HybridDBContext context)
@@ -40,6 +40,7 @@ namespace Hybrid.Repositories.Base
             StudentTierRepo = new(_context);
             TeacherTierRepo = new(_context);
             MiniGameRepo = new(_context);
+            CourseRepo = new(_context);
             MinigameTemplateRepo = new(_context);
         }
 

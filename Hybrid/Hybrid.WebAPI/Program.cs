@@ -102,6 +102,8 @@ builder.Services.AddScoped<ITransactionService, TransactionService>();
 builder.Services.AddScoped<ISupscriptionExtentionService, SupscriptionExtentionService>();
 builder.Services.AddScoped<ITierService, TierService>();
 builder.Services.AddScoped<IMiniGameService, MiniGameService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+
 
 // Register for UnitOfWork and GenericRepository
 builder.Services.AddScoped<UnitOfWork>();
