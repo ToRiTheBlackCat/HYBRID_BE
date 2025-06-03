@@ -40,6 +40,7 @@ namespace Hybrid.Repositories.Base
             StudentTierRepo = new(_context);
             TeacherTierRepo = new(_context);
             MiniGameRepo = new(_context);
+            MinigameTemplateRepo = new(_context);
         }
 
         public async Task BeginTransactionAsync()

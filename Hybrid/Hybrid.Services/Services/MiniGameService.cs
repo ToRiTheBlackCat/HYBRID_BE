@@ -16,6 +16,7 @@ namespace Hybrid.Services.Services
 {
     public interface IMiniGameService
     {
+        Task<List<GetMinigameTemplatesModel>> GetMinigameTemplatesAsync();
         Task<GetAllMinigameResponse> GetMinigameOfCourseAsync(string courseId, GetAllMinigameRequest request);
         Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId, GetAllMinigameRequest request);
         Task<GetMiniGameResponse?> GetMiniGameAsync(string miniGameId);
@@ -30,6 +31,21 @@ namespace Hybrid.Services.Services
         public MiniGameService(UnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
+        }
+
+        /// <summary>
+        /// Func_Get MiniGame Templates
+        /// Created By: TuanCA
+        /// Created Date: 03/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<List<GetMinigameTemplatesModel>> GetMinigameTemplatesAsync()
+        {
+            var minigames = await _unitOfWork.MinigameTemplateRepo.GetAllAsync();
+            var result = minigames.Select(x => x.ToGetMinigameTemplateModel()).ToList();
+
+            return result;
         }
 
         /// <summary>
@@ -112,7 +128,7 @@ namespace Hybrid.Services.Services
 
             var miniGame = request.ToMiniGame();
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
-            miniGame.ThumbnailImage = $"{miniGame.MinigameId}_thumbnail{fileExtention}";
+            miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
             miniGame.DataText = SerializeQuestions(request.GameData);
 
             try
@@ -167,7 +183,7 @@ namespace Hybrid.Services.Services
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
                 miniGame.DataText = SerializeQuestions(request.GameData);
-                miniGame.ThumbnailImage = $"{miniGame.MinigameId}_thumbnail{fileExtention}";
+                miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
                 await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
 
                 await _unitOfWork.CommitTransactionAsync();
