@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Hybrid.Repositories.Models;
 using Hybrid.Services.ViewModel;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace Hybrid.Services.Helpers
 {
     public static class Mapper
     {
-        public static User Map_SignUpVM_To_User(this SignUpRequest signUpRequestViewModel)
+        public static User Map_SignUpUserVM_To_User(this SignUpUserRequest signUpRequestViewModel)
         {
             return new User
             {
@@ -23,27 +24,29 @@ namespace Hybrid.Services.Helpers
             };
         }
 
-        public static Student Map_SignUpVM_To_Student(this SignUpRequest signUpRequestViewModel)
+        public static Student Map_SignUpTeacher_StudentRequestVM_To_Student(this SignUpTeacher_StudentRequest signUpStudentRequestViewModel)
         {
             return new Student
             {
-                FullName = signUpRequestViewModel.FullName,
-                Address = signUpRequestViewModel.Address,
-                Phone = signUpRequestViewModel.Phone,
-                YearOfBirth = signUpRequestViewModel.YearOfBirth,
-                TierId = signUpRequestViewModel.TierId,
+                UserId = signUpStudentRequestViewModel.UserId,
+                FullName = signUpStudentRequestViewModel.FullName,
+                Address = signUpStudentRequestViewModel.Address,
+                Phone = signUpStudentRequestViewModel.Phone,
+                YearOfBirth = signUpStudentRequestViewModel.YearOfBirth,
+                TierId = "1"
             };
         }
 
-        public static Teacher Map_SignUpVM_To_Teacher(this SignUpRequest signUpRequestViewModel)
+        public static Teacher Map_SignUpTeacher_StudentRequestVM_To_Teacher(this SignUpTeacher_StudentRequest signUpTeacherRequestViewModel)
         {
             return new Teacher
             {
-                FullName = signUpRequestViewModel.FullName,
-                Address = signUpRequestViewModel.Address,
-                Phone = signUpRequestViewModel.Phone,
-                YearOfBirth = signUpRequestViewModel.YearOfBirth,
-                TierId = signUpRequestViewModel.TierId,
+                UserId = signUpTeacherRequestViewModel.UserId,
+                FullName = signUpTeacherRequestViewModel.FullName,
+                Address = signUpTeacherRequestViewModel.Address,
+                Phone = signUpTeacherRequestViewModel.Phone,
+                YearOfBirth = signUpTeacherRequestViewModel.YearOfBirth,
+                TierId = "1"
             };
         }
 
@@ -180,11 +183,12 @@ namespace Hybrid.Services.Helpers
                 MinigameName = minigame.MinigameName.Trim(),
                 ThumbnailImage = minigame.ThumbnailImage.Trim(),
                 TeacherId = minigame.TeacherId.Trim(),
+                TeacherName = minigame.Teacher.FullName.Trim(),
                 CourseId= minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
-                ParticipantsCount= minigame.ParticipantsCount,
+                ParticipantsCount = minigame.ParticipantsCount,
                 RatingScore = minigame.RatingScore,
-                TemplateId= minigame.TemplateId.Trim(),
+                TemplateId = minigame.TemplateId.Trim(),
                 TemplateName = minigame.Template.TemplateName.Trim()
             };
         }
@@ -192,6 +196,21 @@ namespace Hybrid.Services.Helpers
         public static AddMiniGameResponseModel ToAddMiniGameResponseModel(this Minigame minigame)
         {
             return new AddMiniGameResponseModel()
+            {
+                MinigameId = minigame.MinigameId.Trim(),
+                MinigameName = minigame.MinigameName.Trim(),
+                TeacherId = minigame.TeacherId.Trim(),
+                Duration = minigame.Duration,
+                TemplateId = minigame.TemplateId.Trim(),
+                TemplateName = minigame.Template.TemplateName.Trim(),
+                CourseId = minigame.CourseId.Trim(),
+                ThumbnailImage = minigame.ThumbnailImage.Trim()
+            };
+        }
+
+        public static UpdateMiniGameModel ToUpdateMiniGameResponseModel(this Minigame minigame)
+        {
+            return new UpdateMiniGameModel()
             {
                 MinigameId = minigame.MinigameId.Trim(),
                 MinigameName = minigame.MinigameName.Trim(),

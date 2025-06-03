@@ -2,6 +2,7 @@
 using Hybrid.Services.Helpers;
 using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,12 @@ namespace Hybrid.Services.Services
 {
     public interface IMiniGameService
     {
-        Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId);
+        Task<GetAllMinigameResponse> GetMinigameOfCourseAsync(string courseId, GetAllMinigameRequest request);
+        Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId, GetAllMinigameRequest request);
         Task<GetMiniGameResponse?> GetMiniGameAsync(string miniGameId);
-        Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention);
+        Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention) where T : MinigameModels;
+        Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) where T : MinigameModels;
+        Task<DeleteMinigameResponse> DeleteMiniGameAsync(string minigameId);
     }
 
     public class MiniGameService : IMiniGameService
@@ -29,29 +33,40 @@ namespace Hybrid.Services.Services
         }
 
         /// <summary>
-        /// Func_Get MiniGame
+        /// Func_Get MiniGame Of course
+        /// Created By: TuanCA
+        /// Created Date: 03/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<GetAllMinigameResponse> GetMinigameOfCourseAsync(string courseId, GetAllMinigameRequest request)
+        {
+            var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfCourseAsync(courseId, request.TemplateId, request.MinigameName);
+            var result = GetAllMinigameResponse.ToResponse(minigames, request.PageSize, request.PageNum);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Func_Get MiniGame of teacher
         /// Created By: TuanCA
         /// Created Date: 27/5/2025
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId)
+        public async Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId, GetAllMinigameRequest request)
         {
-            var response = new GetAllMinigameResponse()
-            {
-                Minigames = new List<GetAllMinigameModel>()
-            };
             var teacher = await _unitOfWork.TeacherRepo.GetByIdAsync(teacherId);
 
             if (teacher == null)
             {
-                return response;
+                return new GetAllMinigameResponse();
             }
 
-            var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfTeacherAsync(teacherId);
-            response.Minigames = minigames.Select(x => x.ToGetAllMinigameModel()).ToList();
+            var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfTeacherAsync(teacherId, request.TemplateId, request.MinigameName);
+            var result = GetAllMinigameResponse.ToResponse(minigames, request.PageSize, request.PageNum);
 
-            return response;
+            return result;
         }
 
 
@@ -90,6 +105,7 @@ namespace Hybrid.Services.Services
         /// Updated Date: X
         /// </summary>
         public async Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention)
+            where T : MinigameModels
         {
             var response = new AddMiniGameResponse();
             response.IsSuccess = false;
@@ -123,12 +139,62 @@ namespace Hybrid.Services.Services
             return response;
         }
 
+        public async Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) 
+            where T : MinigameModels
+        {
+            var response = new UpdateMinigameResponse();
+
+            // Find Minigame by Id
+            var miniGame = await _unitOfWork.MiniGameRepo.GetByIdAsync(request.MinigameId);
+            if (miniGame == null)
+            {
+                response.Message = "Minigame not found.";
+                return response;
+            }
+
+            // Checking templateId
+            if (miniGame.TemplateId != request.TemplateId)
+            {
+                response.Message = $"Invalid templateId. (Expected: {miniGame.TemplateId}) - (Actual: {request.TemplateId})";
+                return response;
+            }
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                // Set request data to miniGame
+                miniGame.MinigameName = request.MinigameName;
+                miniGame.Duration = request.Duration;
+                miniGame.DataText = SerializeQuestions(request.GameData);
+                miniGame.ThumbnailImage = $"{miniGame.MinigameId}_thumbnail{fileExtention}";
+                await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
+
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                response.Message = "Failed to update Minigame";
+                return response;
+            }
+            var updatedMinigame = await _unitOfWork.MiniGameRepo.GetFirstWithIncludeAsync(
+                x => x.MinigameId == miniGame.MinigameId,
+                x => x.Template
+            );
+
+            response.IsSuccess = true;
+            response.Message = "Updated minigame successfully.";
+            response.Model = updatedMinigame!.ToAddMiniGameResponseModel();
+            return response;
+        }
+
         /// <summary>
         /// Serialize The list of questions into XML format
         /// </summary>
         /// <param name="questions"></param>
         /// <returns></returns>
-        private static string SerializeQuestions<T>(List<T> questions)
+        private string SerializeQuestions<T>(List<T> questions)
         {
             var wrapper = new QuestionList<T>
             {
@@ -151,5 +217,57 @@ namespace Hybrid.Services.Services
             return stringWriter.ToString();
         }
 
+        /// <summary>
+        /// Serialize Question Json Version
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="question"></param>
+        /// <returns></returns>
+        private string SerializeQuestionsJson<T>(T question)
+        {
+            return JsonSerializer.Serialize(question);
+        }
+
+        /// <summary>
+        /// Func_Delete minigame
+        /// Created By: TuanCA
+        /// Created Date: 27/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<DeleteMinigameResponse> DeleteMiniGameAsync(string minigameId)
+        {
+            var result = new DeleteMinigameResponse()
+            {
+                IsSuccess = false,
+                Message = ""
+            };
+            var minigame = _unitOfWork.MiniGameRepo.GetById(minigameId);
+
+            if (minigame == null)
+            {
+                result.Message = "Minigame not found.";
+                return result;
+            }
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                await _unitOfWork.MiniGameRepo.RemoveAsync(minigame);
+                await _unitOfWork.SaveChangesAsync();
+
+                await _unitOfWork.CommitTransactionAsync();
+
+                result.IsSuccess = true;
+                result.Message = "Delete minigame successfully.";
+            }
+            catch (Exception)
+            {
+                result.Message = "Delete minigame failed";
+            }
+
+            return result;
+        }
     }
 }

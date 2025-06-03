@@ -25,6 +25,7 @@ namespace Hybrid.Repositories.Base
 
         public TeacherSupscriptionRepository TeacherSupscriptionRepo { get; }
         public MiniGameRepository MiniGameRepo { get; }
+        public MinigameTemplateRepository MinigameTemplateRepo { get; }
 
         public UnitOfWork(HybridDBContext context)
         {

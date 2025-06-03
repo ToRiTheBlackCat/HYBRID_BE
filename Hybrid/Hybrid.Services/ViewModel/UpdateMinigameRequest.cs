@@ -1,6 +1,5 @@
-﻿#nullable disable
-using Hybrid.Repositories.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,23 +7,19 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
 namespace Hybrid.Services.ViewModel
 {
-    public class AddMiniGameRequest<T> where T : MinigameModels
+    public class UpdateMinigameRequest<T> where T : MinigameModels
     {
-        //[Required]
-        //public string MinigameId { get; set; }
+        [Required]
+        public string MinigameId { get; set; }
 
         [Required]
         public string MinigameName { get; set; }
 
         [Required]
         public IFormFile ImageFile { get; set; }
-
-        [Required]
-        public string TeacherId { get; set; }
 
         [Required]
         public string GameDataJson { get; set; }
@@ -36,27 +31,21 @@ namespace Hybrid.Services.ViewModel
         public string TemplateId { get; set; }
 
         [Required]
-        public string CourseId { get; set; }
-
-        [Required]
         public List<T> GameData =>
             string.IsNullOrEmpty(GameDataJson)
             ? new List<T>()
             : JsonSerializer.Deserialize<List<T>>(GameDataJson) ?? new List<T>();
 
+        private string _teacherId = "";
 
-        public Minigame ToMiniGame()
+        public string GetTeacherId()
         {
-            return new Minigame()
-            {
-                MinigameName = this.MinigameName,
-                TeacherId = this.TeacherId,
-                Duration = this.Duration,
-                TemplateId = this.TemplateId,
-                CourseId = this.CourseId,
-            };
+            return _teacherId;
+        }
+
+        public void SetTeacherId(string teacherId)
+        {
+            _teacherId = teacherId;
         }
     }
-
-    
 }
