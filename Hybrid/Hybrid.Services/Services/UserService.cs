@@ -22,7 +22,10 @@ namespace Hybrid.Services.Services
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task<User?> GetUserByEmailAsync(string email);
         Task<int> UpdateUserAccount(User user);
-        Task<(bool, string)> SignUpUserAccount(SignUpRequest request);
+        Task<(bool, string, string)> SignUpUserAccount(SignUpUserRequest request);
+        Task<(bool, string)> SignUpTeacherAccount(SignUpTeacher_StudentRequest request);
+        Task<(bool, string)> SignUpStudentAccount(SignUpTeacher_StudentRequest request);
+
         Task<User?> GetUserByIdAsync(string userId);
         Task<(bool, string)> RequestResetPasswordAsync(string email);
         Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest);
@@ -261,10 +264,10 @@ namespace Hybrid.Services.Services
         /// FUNC_SignUpUserAccount
         /// Created By: TriNHM
         /// Created Date: 21/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 28/5/2025
         /// </summary>
-        public async Task<(bool, string)> SignUpUserAccount(SignUpRequest request)
+        public async Task<(bool, string, string)> SignUpUserAccount(SignUpUserRequest request)
         {
             try
             {
@@ -273,34 +276,74 @@ namespace Hybrid.Services.Services
                 var hashedPassword = Sha256Encoding.ComputeSHA256Hash(request.Password + HybridVariables.SecretString);
                 request.Password = hashedPassword;
 
-                var newUser = request.Map_SignUpVM_To_User();
-
+                var newUser = request.Map_SignUpUserVM_To_User();
                 await _unitOfWork.UserRepo.CreateAsync(newUser);
-
-                if (request.RoleId.Equals(ConstantEnum.RoleID.STUDENT))
-                {
-                    var newStudent = request.Map_SignUpVM_To_Student();
-                    newStudent.UserId = newUser.UserId;
-                    await _unitOfWork.StudentRepo.CreateAsync(newStudent);
-
-                }
-                else if (request.RoleId.Equals(ConstantEnum.RoleID.TEACHER))
-                {
-                    var newTeacher = request.Map_SignUpVM_To_Teacher();
-                    newTeacher.UserId = newUser.UserId;
-                    await _unitOfWork.TeacherRepo.CreateAsync(newTeacher);
-                }
-
                 await _unitOfWork.CommitTransactionAsync();
-                return (true, "SignUp successfully");
+
+                return (true, newUser.UserId, "SignUp successfully");
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
                 Console.Write(ex.Message);
-                return (false, "SignUp fail");
+                return (false, "", "SignUp fail");
             }
         }
+
+        /// <summary>
+        /// FUNC_SignUpTeacherAccount
+        /// Created By: TriNHM
+        /// Created Date: 28/5/2025
+        /// Updated By: 
+        /// Updated Date: 
+        /// </summary>
+        public async Task<(bool, string)> SignUpTeacherAccount(SignUpTeacher_StudentRequest request)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var newTeacher = request.Map_SignUpTeacher_StudentRequestVM_To_Teacher();
+                await _unitOfWork.TeacherRepo.CreateAsync(newTeacher);
+                await _unitOfWork.CommitTransactionAsync();
+
+                return (true, "SignUp Teacher account successfully");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.Write(ex.Message);
+                return (false, "SignUp Teacher account fail");
+            }
+        }
+
+        /// <summary>
+        /// FUNC_SignUpStudentAccount
+        /// Created By: TriNHM
+        /// Created Date: 28/5/2025
+        /// Updated By: 
+        /// Updated Date: 
+        /// </summary>
+        public async Task<(bool, string)> SignUpStudentAccount(SignUpTeacher_StudentRequest request)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                var newStudent = request.Map_SignUpTeacher_StudentRequestVM_To_Student();
+                await _unitOfWork.StudentRepo.CreateAsync(newStudent);
+                await _unitOfWork.CommitTransactionAsync();
+
+                return (true, "SignUp Student account successfully");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.Write(ex.Message);
+                return (false, "SignUp Student account fail");
+            }
+        }
+
 
         /// <summary>
         /// FUNC_SignUpUserAccount
@@ -329,7 +372,7 @@ namespace Hybrid.Services.Services
                 );
 
                 response = teacher?.ToGetProfileResponse();
-                
+
             }
             else
             {
@@ -416,5 +459,7 @@ namespace Hybrid.Services.Services
 
             return result;
         }
+
+
     }
 }
