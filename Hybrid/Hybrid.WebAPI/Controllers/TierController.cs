@@ -1,4 +1,5 @@
-﻿using Hybrid.Services.Services;
+﻿using Hybrid.Repositories.Models;
+using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +28,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-student")]
-        public async Task<ActionResult> GetAllTierOfStudent()
+        public async Task<ActionResult<List<StudentTier>>> GetAllTierOfStudent()
         {
             var tierList = await _tierService.GetAllTierOfStudent();
             return Ok(tierList);
@@ -62,7 +63,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-teacher")]
-        public async Task<ActionResult> GetAllTierOfTeacher()
+        public async Task<ActionResult<List<TeacherTier>>> GetAllTierOfTeacher()
         {
             var tierList = await _tierService.GetAllTierOfTeacher();
             return Ok(tierList);

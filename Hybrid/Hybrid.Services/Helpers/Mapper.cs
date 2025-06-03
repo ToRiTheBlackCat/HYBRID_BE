@@ -207,6 +207,49 @@ namespace Hybrid.Services.Helpers
                 ThumbnailImage = minigame.ThumbnailImage.Trim()
             };
         }
+        public static DetailCoursesResponse? Map_Course_To_DetailCoursesResponse(this Course course)
+        {
+            var mappedCourse = new DetailCoursesResponse
+            {
+                CourseId = course.CourseId.Trim(),
+                CourseName = course.CourseName.Trim(),
+                DataText = course.DataText.Trim(),
+                LevelId = course.LevelId.Trim(),
+                LevelName = course.Level.LevelName.Trim(),
+            };
+
+            return mappedCourse;
+        }
+
+        public static List<CoursesResponse> Map_ListCourse_To_ListCoursesResponse(this List<Course> list)
+        {
+            var mappedList = new List<CoursesResponse>();
+            foreach (var item in list)
+            {
+                var response = new CoursesResponse
+                {
+                    CourseId = item.CourseId.Trim(),
+                    CourseName = item.CourseName.Trim(),
+                    LevelId = item.LevelId.Trim(),
+                    LevelName = item.Level.LevelName.Trim(),
+                };
+
+                mappedList.Add(response);
+            }
+
+            return mappedList;
+        }
+        public static Course Map_UpdateCourseRequest_To_Course(this UpdateCourseRequest request)
+        {
+            var course = new Course
+            {
+                CourseId = request.CourseId.Trim(),
+                CourseName = request.CourseName.Trim(),
+                DataText = request.DataText.Trim(),
+                LevelId = request.LevelId.Trim(),
+            };
+
+            return course;
 
         public static UpdateMiniGameModel ToUpdateMiniGameResponseModel(this Minigame minigame)
         {
