@@ -275,6 +275,7 @@ namespace Hybrid.Services.Services
 
                 await _unitOfWork.CommitTransactionAsync();
 
+                result.Minigame = minigame;
                 result.IsSuccess = true;
                 result.Message = "Delete minigame successfully.";
             }
