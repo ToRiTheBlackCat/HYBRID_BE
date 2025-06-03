@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Hybrid.Repositories.Models;
 using Hybrid.Services.ViewModel;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,7 +183,8 @@ namespace Hybrid.Services.Helpers
                 MinigameName = minigame.MinigameName.Trim(),
                 ThumbnailImage = minigame.ThumbnailImage.Trim(),
                 TeacherId = minigame.TeacherId.Trim(),
-                CourseId = minigame.CourseId.Trim(),
+                TeacherName = minigame.Teacher.FullName.Trim(),
+                CourseId= minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
                 ParticipantsCount = minigame.ParticipantsCount,
                 RatingScore = minigame.RatingScore,
@@ -248,6 +250,32 @@ namespace Hybrid.Services.Helpers
             };
 
             return course;
+
+        public static UpdateMiniGameModel ToUpdateMiniGameResponseModel(this Minigame minigame)
+        {
+            return new UpdateMiniGameModel()
+            {
+                MinigameId = minigame.MinigameId.Trim(),
+                MinigameName = minigame.MinigameName.Trim(),
+                TeacherId = minigame.TeacherId.Trim(),
+                Duration = minigame.Duration,
+                TemplateId = minigame.TemplateId.Trim(),
+                TemplateName = minigame.Template.TemplateName.Trim(),
+                CourseId = minigame.CourseId.Trim(),
+                ThumbnailImage = minigame.ThumbnailImage.Trim()
+            };
+        }
+
+        public static GetMinigameTemplatesModel ToGetMinigameTemplateModel(this MinigameTemplate template)
+        {
+            return new GetMinigameTemplatesModel()
+            {
+                TemplateId = template.TemplateId.Trim(),
+                TemplateName = template.TemplateName.Trim(),
+                Description = template.Description.Trim(),
+                Image = template.Image.Trim(),
+                Summary = template.Summary.Trim(),
+            };
         }
     }
 }

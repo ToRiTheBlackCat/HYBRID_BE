@@ -117,8 +117,8 @@ builder.Services.AddScoped<JwtAuthentication>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     //app.UseSwaggerUI();
     app.UseSwaggerUI(c =>
@@ -127,7 +127,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty; // Serve Swagger UI at the app root
     });
 
-}
+//}
 
 // Enable serving static files
 app.UseStaticFiles();
