@@ -287,6 +287,19 @@ namespace Hybrid.WebAPI.Controllers
             }
 
             var result = await _miniGameService.DeleteMiniGameAsync(minigameId);
+
+            if (result.IsSuccess)
+            {
+                // Path to the image of minigame
+                string filePath = Path.Combine(_env.WebRootPath, "images", result.Minigame.ThumbnailImage);
+
+                if (System.IO.File.Exists(filePath))
+                {
+
+                    System.IO.File.Delete(filePath);
+                }
+            }
+
             return Ok(result);
         }
     }
