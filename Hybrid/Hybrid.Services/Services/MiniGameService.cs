@@ -2,6 +2,7 @@
 using Hybrid.Services.Helpers;
 using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace Hybrid.Services.Services
     {
         Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId);
         Task<GetMiniGameResponse?> GetMiniGameAsync(string miniGameId);
-        Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention);
+        Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention) where T : MinigameModels;
+        Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) where T : MinigameModels;
     }
 
     public class MiniGameService : IMiniGameService
@@ -90,6 +92,7 @@ namespace Hybrid.Services.Services
         /// Updated Date: X
         /// </summary>
         public async Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention)
+            where T : MinigameModels
         {
             var response = new AddMiniGameResponse();
             response.IsSuccess = false;
@@ -123,12 +126,62 @@ namespace Hybrid.Services.Services
             return response;
         }
 
+        public async Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) 
+            where T : MinigameModels
+        {
+            var response = new UpdateMinigameResponse();
+
+            // Find Minigame by Id
+            var miniGame = await _unitOfWork.MiniGameRepo.GetByIdAsync(request.MinigameId);
+            if (miniGame == null)
+            {
+                response.Message = "Minigame not found.";
+                return response;
+            }
+
+            // Checking templateId
+            if (miniGame.TemplateId != request.TemplateId)
+            {
+                response.Message = $"Invalid templateId. (Expected: {miniGame.TemplateId}) - (Actual: {request.TemplateId})";
+                return response;
+            }
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                // Set request data to miniGame
+                miniGame.MinigameName = request.MinigameName;
+                miniGame.Duration = request.Duration;
+                miniGame.DataText = SerializeQuestions(request.GameData);
+                miniGame.ThumbnailImage = $"{miniGame.MinigameId}_thumbnail{fileExtention}";
+                await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
+
+                await _unitOfWork.CommitTransactionAsync();
+            }
+            catch (Exception)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                response.Message = "Failed to update Minigame";
+                return response;
+            }
+            var updatedMinigame = await _unitOfWork.MiniGameRepo.GetFirstWithIncludeAsync(
+                x => x.MinigameId == miniGame.MinigameId,
+                x => x.Template
+            );
+
+            response.IsSuccess = true;
+            response.Message = "Updated minigame successfully.";
+            response.Model = updatedMinigame!.ToAddMiniGameResponseModel();
+            return response;
+        }
+
         /// <summary>
         /// Serialize The list of questions into XML format
         /// </summary>
         /// <param name="questions"></param>
         /// <returns></returns>
-        private static string SerializeQuestions<T>(List<T> questions)
+        private string SerializeQuestions<T>(List<T> questions)
         {
             var wrapper = new QuestionList<T>
             {
@@ -149,6 +202,11 @@ namespace Hybrid.Services.Services
             using var xmlWriter = XmlWriter.Create(stringWriter, settings);
             serializer.Serialize(xmlWriter, wrapper, namespaces);
             return stringWriter.ToString();
+        }
+
+        private string SerializeQuestionsJson<T>(T question)
+        {
+            return JsonSerializer.Serialize(question);
         }
 
     }
