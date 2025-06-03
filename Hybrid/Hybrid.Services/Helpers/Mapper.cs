@@ -222,5 +222,17 @@ namespace Hybrid.Services.Helpers
                 ThumbnailImage = minigame.ThumbnailImage.Trim()
             };
         }
+
+        public static GetMinigameTemplatesModel ToGetMinigameTemplateModel(this MinigameTemplate template)
+        {
+            return new GetMinigameTemplatesModel()
+            {
+                TemplateId = template.TemplateId.Trim(),
+                TemplateName = template.TemplateName.Trim(),
+                Description = template.Description.Trim(),
+                Image = template.Image.Trim(),
+                Summary = template.Summary.Trim(),
+            };
+        }
     }
 }

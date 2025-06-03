@@ -24,6 +24,14 @@ namespace Hybrid.WebAPI.Controllers
             _miniGameService = miniGameService;
         }
 
+        [HttpGet("templates")]
+        public async Task<ActionResult<List<GetMinigameTemplatesModel>>> GetMinigametTemplates()
+        {
+            var response = await _miniGameService.GetMinigameTemplatesAsync();
+
+            return Ok(response);
+        }
+
         /// <summary>
         /// API_Get MiniGame of Course
         /// Created By: TuanCA
@@ -119,7 +127,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("quiz")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddMiniGame([FromForm]AddMiniGameRequest<QuizQuestion> request)
+        public async Task<IActionResult> AddMiniGame([FromForm] AddMiniGameRequest<QuizQuestion> request)
         {
             return await AddMiniGame<QuizQuestion>(request);
         }
@@ -133,7 +141,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("anagram")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddMiniGame([FromForm]AddMiniGameRequest<AnagramQuestion> request)
+        public async Task<IActionResult> AddMiniGame([FromForm] AddMiniGameRequest<AnagramQuestion> request)
         {
             return await AddMiniGame<AnagramQuestion>(request);
         }
@@ -141,7 +149,7 @@ namespace Hybrid.WebAPI.Controllers
         /// <summary>
         /// Generic method to handle adding minigames
         /// </summary>
-        private async Task<IActionResult> AddMiniGame<T>([FromForm] AddMiniGameRequest<T> request) where T : MinigameModels 
+        private async Task<IActionResult> AddMiniGame<T>([FromForm] AddMiniGameRequest<T> request) where T : MinigameModels
         {
             if (!ModelState.IsValid)
             {
@@ -259,9 +267,9 @@ namespace Hybrid.WebAPI.Controllers
             string saveFolder = Path.Combine(_env.WebRootPath, "images", "users");
             Directory.CreateDirectory(saveFolder); // Ensure the folder exists
 
-            //string fileName = $"{saveName}{Path.GetExtension(imageFile.FileName)}";
+            string filePath = Path.Combine(_env.WebRootPath, "images");
             string fileName = $"{saveName}";
-            string fullPath = Path.Combine(saveFolder, fileName);
+            string fullPath = Path.Combine(filePath, fileName);
 
             using var stream = new FileStream(fullPath, FileMode.Create);
             imageFile.CopyTo(stream);
