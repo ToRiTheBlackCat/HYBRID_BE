@@ -15,11 +15,35 @@ namespace Hybrid.Repositories.Repos
         {
         }
 
-        public async Task<List<Minigame>> GetMinigamesOfTeacherAsync(string teacherId)
+        public async Task<List<Minigame>> GetMinigamesOfTeacherAsync(string teacherId, string templateId, string minigameName)
         {
             var list = await _context.Minigames
                 .Include(x => x.Template)
-                .Where(x => x.TeacherId.Trim().Equals(teacherId))
+                .Include(x => x.Teacher)
+                .Include(x => x.Ratings)
+                .Where(x =>
+                    x.TeacherId.Trim().Equals(teacherId) &&
+                    (string.IsNullOrEmpty(templateId) || x.TemplateId.Trim().Equals(templateId)) &&
+                    (string.IsNullOrEmpty(minigameName) || x.MinigameName.Trim().Contains(minigameName))
+                )
+                .OrderBy(x => x.MinigameName)
+                .ToListAsync();
+
+            return list;
+        }
+
+        public async Task<List<Minigame>> GetMinigamesOfCourseAsync(string courseId, string templateId, string minigameName)
+        {
+            var list = await _context.Minigames
+                .Include(x => x.Template)
+                .Include(x => x.Teacher)
+                .Include(x => x.Ratings)
+                 .Where(x =>
+                    x.CourseId.Trim().Equals(courseId) &&
+                    (string.IsNullOrEmpty(templateId) || x.TemplateId.Trim().Equals(templateId)) &&
+                    (string.IsNullOrEmpty(minigameName) || x.MinigameName.Trim().Contains(minigameName))
+                )
+                .OrderBy(x => x.MinigameName)
                 .ToListAsync();
 
             return list;
