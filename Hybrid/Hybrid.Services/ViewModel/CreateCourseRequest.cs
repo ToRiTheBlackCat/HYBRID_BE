@@ -11,9 +11,17 @@ namespace Hybrid.Services.ViewModel
     {
         [Required]
         public string CourseName { get; set; }
-        [Required]
-        public string DataText { get; set; }
+        public string DataText { get; set; } = string.Empty;
         [Required]
         public string LevelId { get; set; }
+        [Required]
+        public string LevelName { get; set; }
+
+        [Required]
+        public List<Image> ImagesList { get; set; }
+    }
+    public class Image
+    {
+        public string imageString { get; set; }
     }
 }
