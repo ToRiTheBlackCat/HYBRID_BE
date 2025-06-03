@@ -250,6 +250,7 @@ namespace Hybrid.Services.Helpers
             };
 
             return course;
+        }
 
         public static UpdateMiniGameModel ToUpdateMiniGameResponseModel(this Minigame minigame)
         {
