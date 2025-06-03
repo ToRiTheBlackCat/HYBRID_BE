@@ -237,5 +237,17 @@ namespace Hybrid.Services.Helpers
 
             return mappedList;
         }
+        public static Course Map_UpdateCourseRequest_To_Course(this UpdateCourseRequest request)
+        {
+            var course = new Course
+            {
+                CourseId = request.CourseId.Trim(),
+                CourseName = request.CourseName.Trim(),
+                DataText = request.DataText.Trim(),
+                LevelId = request.LevelId.Trim(),
+            };
+
+            return course;
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace Hybrid.Services.Services
         Task<List<CoursesResponse>?> GetAllCourses(string? courseName, string? levelId, int currentPage, int pageSize);
         Task<DetailCoursesResponse?> GetCourseById(string? courseId);
         Task<(bool, string)> CreateCourse(CreateCourseRequest request);
-
+        Task<(bool, string)> UpdateCourse(UpdateCourseRequest request);
     }
     public class CourseService : ICourseService
     {
@@ -82,6 +82,25 @@ namespace Hybrid.Services.Services
                 result = foundCourse.Map_Course_To_DetailCoursesResponse();
             }
             return result;
+        }
+
+        public async Task<(bool, string)> UpdateCourse(UpdateCourseRequest request)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                var mappedCourse = request.Map_UpdateCourseRequest_To_Course();
+
+                var result = await _unitOfWork.CourseRepo.UpdateAsync(mappedCourse);
+                await _unitOfWork.CommitTransactionAsync();
+                return (true, "Update successfully");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.WriteLine(ex.Message);
+                return (false, "Update fail");
+            }
         }
     }
 }

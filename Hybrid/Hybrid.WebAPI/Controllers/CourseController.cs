@@ -2,6 +2,7 @@
 using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections;
 using System.Text;
 
 namespace Hybrid.WebAPI.Controllers
@@ -76,27 +77,40 @@ namespace Hybrid.WebAPI.Controllers
                 isSuccess,
                 message
             });
-
         }
 
-        private string SupportCreateDataText(CreateCourseRequest request)
+        private string SupportCreateDataText<T>(T request) where T : class
         {
-            if (request.ImagesList == null || request.ImagesList.Count == 0)
-            {
-                return string.Empty;
-            }
+            var imagesListProp = typeof(T).GetProperty("ImagesList");
+            var levelNameProp = typeof(T).GetProperty("LevelName");
+            var courseNameProp = typeof(T).GetProperty("CourseName");
+
+            var imagesList = imagesListProp?.GetValue(request) as IList;
+            var levelName = levelNameProp?.GetValue(request)?.ToString();
+            var courseName = courseNameProp?.GetValue(request)?.ToString();
+
+
+            if (imagesList == null || imagesList.Count == 0) return string.Empty;
+
 
             var builder = new StringBuilder();
             builder.Append("<content>\n");
 
             //Add thumbnailImage 
-            builder.Append($"\t<thumbnail>/courses/{request.LevelName}/{request.CourseName}/{request.ImagesList[0].imageString}<\thumbnail>\n");
+            var imageStringProp = imagesList[0]?.GetType().GetProperty("imageString");
+            var firstImageString = imageStringProp?.GetValue(imagesList[0])?.ToString();
+
+
+            builder.Append($"\t<thumbnail>/courses/{levelName}/{courseName}/{firstImageString}</thumbnail>\n");
 
             //Add other images
             builder.Append("\t<images>\n");
-            for (int i = 1; i < request.ImagesList.Count; i++)
+            for (int i = 1; i < imagesList.Count; i++)
             {
-                builder.Append($"\t\t<img>/courses/{request.LevelName}/{request.CourseName}/{request.ImagesList[i].imageString}</img>\n");
+                var imageObj = imagesList[i];
+                var imageStr = imageStringProp?.GetValue(imageObj)?.ToString();
+
+                builder.Append($"\t\t<img>/courses/{levelName}/{courseName}/{imageStr}</img>\n");
             }
             builder.Append("\t</images>\n");
             builder.Append("</content>");
@@ -104,6 +118,28 @@ namespace Hybrid.WebAPI.Controllers
             return builder.ToString();
         }
 
+        [HttpPut]
+        public async Task<ActionResult> UpdateCourse([FromBody] UpdateCourseRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
+            var foundCourse = await _courseService.GetCourseById(request.CourseId);
+            if (foundCourse == null)
+            {
+                return NotFound(ModelState);
+            }
+
+            request.DataText = SupportCreateDataText(request);
+            var (isSuccess, message) = await _courseService.UpdateCourse(request);
+
+            return Ok(new
+            {
+                isSuccess,
+                message
+            });
+        }
     }
 }
