@@ -181,6 +181,7 @@ namespace Hybrid.Services.Helpers
                 MinigameName = minigame.MinigameName.Trim(),
                 ThumbnailImage = minigame.ThumbnailImage.Trim(),
                 TeacherId = minigame.TeacherId.Trim(),
+                TeacherName = minigame.Teacher.FullName.Trim(),
                 CourseId= minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
                 ParticipantsCount= minigame.ParticipantsCount,

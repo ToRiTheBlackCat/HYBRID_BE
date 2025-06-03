@@ -24,11 +24,29 @@ namespace Hybrid.WebAPI.Controllers
             _miniGameService = miniGameService;
         }
 
-        //[HttpGet]
-        //public async Task<ActionResult> GetMinigamesOfCoure(string courseId)
-        //{
-        //    throw
-        //}
+        /// <summary>
+        /// API_Get MiniGame of Course
+        /// Created By: TuanCA
+        /// Created Date: 27/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpGet("course/{courseId}")]
+        public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfCourse(string courseId, [FromQuery] GetAllMinigameRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var response = await _miniGameService.GetMinigameOfCourseAsync(courseId, request);
+            if (response == null)
+            {
+                return NotFound("Minigame not found.");
+            }
+
+            return Ok(response);
+        }
 
         /// <summary>
         /// API_Get MiniGame of Teacher
@@ -37,15 +55,15 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        [HttpGet]
-        public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfTeacher(string teacherId)
+        [HttpGet("teacher/{teacherId}")]
+        public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfTeacher(string teacherId, [FromQuery] GetAllMinigameRequest request)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            var response = await _miniGameService.GetMinigameOfTeacherAsync(teacherId);
+            var response = await _miniGameService.GetMinigameOfTeacherAsync(teacherId, request);
             if (response == null)
             {
                 return NotFound("Minigame not found.");
@@ -249,6 +267,19 @@ namespace Hybrid.WebAPI.Controllers
             imageFile.CopyTo(stream);
 
             return fileName;
+        }
+
+
+        [HttpDelete]
+        public async Task<ActionResult<DeleteMinigameResponse>> DeleteMinigame([Required] string minigameId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _miniGameService.DeleteMiniGameAsync(minigameId);
+            return Ok(result);
         }
     }
 }
