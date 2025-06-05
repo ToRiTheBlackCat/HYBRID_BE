@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿#nullable disable
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System;
 using System.Collections.Generic;
@@ -30,11 +31,8 @@ namespace Hybrid.Services.ViewModel
         [Required]
         public string TemplateId { get; set; }
 
-        [Required]
-        public List<T> GameData =>
-            string.IsNullOrEmpty(GameDataJson)
-            ? new List<T>()
-            : JsonSerializer.Deserialize<List<T>>(GameDataJson) ?? new List<T>();
+        public List<T> GameData => !this.Validate(null).Any() ?
+            JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
 
         private string _teacherId = "";
 
@@ -46,6 +44,35 @@ namespace Hybrid.Services.ViewModel
         public void SetTeacherId(string teacherId)
         {
             _teacherId = teacherId;
+        }
+
+        /// <summary>
+        /// Validates the GameDataJson.
+        /// </summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+
+            if (string.IsNullOrWhiteSpace(GameDataJson))
+            {
+                results.Add(new ValidationResult("GameDataJson is required.", new[] { nameof(GameDataJson) }));
+                return results;
+            }
+
+            try
+            {
+                var data = JsonSerializer.Deserialize<List<T>>(GameDataJson);
+                if (data == null)
+                {
+                    results.Add(new ValidationResult("GameDataJson could not be deserialized to the expected type.", new[] { nameof(GameDataJson) }));
+                }
+            }
+            catch (JsonException ex)
+            {
+                results.Add(new ValidationResult($"Invalid JSON format: {ex.Message}", new[] { nameof(GameDataJson) }));
+            }
+
+            return results;
         }
     }
 }
