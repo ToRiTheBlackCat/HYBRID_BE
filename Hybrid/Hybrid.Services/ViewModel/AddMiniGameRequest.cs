@@ -1,22 +1,14 @@
 ﻿#nullable disable
 using Hybrid.Repositories.Models;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Hybrid.Services.ViewModel
 {
-    public class AddMiniGameRequest<T> where T : MinigameModels
+    public class AddMiniGameRequest<T> : IValidatableObject where T : MinigameModels
     {
-        //[Required]
-        //public string MinigameId { get; set; }
-
         [Required]
         public string MinigameName { get; set; }
 
@@ -38,11 +30,11 @@ namespace Hybrid.Services.ViewModel
         [Required]
         public string CourseId { get; set; }
 
-        [Required]
-        public List<T> GameData =>
-            string.IsNullOrEmpty(GameDataJson)
-            ? new List<T>()
-            : JsonSerializer.Deserialize<List<T>>(GameDataJson) ?? new List<T>();
+        public string test; // This is just a placeholder for testing purposes, can be removed later
+
+        [JsonIgnore]
+        public List<T> GameData => !this.Validate(null).Any() ?
+            JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
 
 
         public Minigame ToMiniGame()
@@ -56,7 +48,35 @@ namespace Hybrid.Services.ViewModel
                 CourseId = this.CourseId,
             };
         }
-    }
 
-    
+        /// <summary>
+        /// Validates the GameDataJson.
+        /// </summary>
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            var results = new List<ValidationResult>();
+
+            if (string.IsNullOrWhiteSpace(GameDataJson))
+            {
+                results.Add(new ValidationResult("GameDataJson is required.", new[] { nameof(GameDataJson) }));
+                return results;
+            }
+
+            try
+            {
+                var data = JsonSerializer.Deserialize<List<T>>(GameDataJson);
+                if (data == null)
+                {
+                    results.Add(new ValidationResult("GameDataJson could not be deserialized to the expected type.", new[] { nameof(GameDataJson) }));
+                }
+            }
+            catch (JsonException ex)
+            {
+                results.Add(new ValidationResult($"Invalid JSON format: {ex.Message}", new[] { nameof(GameDataJson) }));
+            }
+
+            return results;
+        }
+    }
 }
+
