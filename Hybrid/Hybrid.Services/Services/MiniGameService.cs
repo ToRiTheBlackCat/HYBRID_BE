@@ -142,6 +142,14 @@ namespace Hybrid.Services.Services
                 return response;
             }
 
+            // Check valid CourseId
+            var course = await _unitOfWork.CourseRepo.GetByIdAsync(request.CourseId);
+            if (course == null)
+            {
+                response.Message = $"Error: Course not found. (Input: {request.CourseId})";
+                return response;
+            }
+
             var miniGame = request.ToMiniGame();
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
             miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
@@ -201,7 +209,7 @@ namespace Hybrid.Services.Services
             }
 
             // Checking TeacherId
-            if (miniGame.TeacherId.Trim().Equals(request.GetTeacherId(), StringComparison.Ordinal))
+            if (!miniGame.TeacherId.Trim().Equals(request.GetTeacherId()))
             {
                 response.Message = $"Invalid TeacherId. (Expected: {miniGame.TeacherId}) - (Actual: {request.GetTeacherId()})";
                 return response;
