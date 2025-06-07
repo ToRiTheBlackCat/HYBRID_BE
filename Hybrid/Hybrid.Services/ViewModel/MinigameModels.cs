@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace Hybrid.Services.ViewModel
 {
+
+
     public class MinigameModels
     {
     }
@@ -54,4 +57,6 @@ namespace Hybrid.Services.ViewModel
         [Required]
         public string Word { get; set; }
     }
+
+
 }

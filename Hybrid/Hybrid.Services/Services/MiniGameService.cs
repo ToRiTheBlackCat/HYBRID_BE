@@ -126,6 +126,22 @@ namespace Hybrid.Services.Services
             var response = new AddMiniGameResponse();
             response.IsSuccess = false;
 
+            // Check valid template
+            var template = _unitOfWork.MinigameTemplateRepo.GetById(request.TemplateId);
+            if (template == null)
+            {
+                response.Message = $"Error: Invalid templateId. (Input: {request.TemplateId})";
+                return response;
+            }
+
+            // Check valid teacherrId
+            var teacher = await _unitOfWork.TeacherRepo.GetByIdAsync(request.TeacherId);
+            if (teacher == null)
+            {
+                response.Message = $"Error: Teacher not found. (Input: {request.TeacherId})";
+                return response;
+            }
+
             var miniGame = request.ToMiniGame();
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
             miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
@@ -138,11 +154,12 @@ namespace Hybrid.Services.Services
                 await _unitOfWork.MiniGameRepo.CreateAsync(miniGame);
                 await _unitOfWork.CommitTransactionAsync();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                //throw;
                 await _unitOfWork.RollbackTransactionAsync();
-                response.Message = "Failed to create Minigame";
+                response.Message = "Failed to create Minigame. Error: " + ex.Message;
+                return response;
             }
             var addedMinigame = await _unitOfWork.MiniGameRepo.GetFirstWithIncludeAsync(
                 x => x.MinigameId == miniGame.MinigameId,
@@ -155,7 +172,15 @@ namespace Hybrid.Services.Services
             return response;
         }
 
-        public async Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) 
+
+        /// <summary>
+        /// Func_Update minigame
+        /// Created By: TuanCA
+        /// Created Date: 03/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention)
             where T : MinigameModels
         {
             var response = new UpdateMinigameResponse();
@@ -169,21 +194,28 @@ namespace Hybrid.Services.Services
             }
 
             // Checking templateId
-            if (miniGame.TemplateId != request.TemplateId)
+            if (!miniGame.TemplateId.Trim().Equals(request.TemplateId))
             {
                 response.Message = $"Invalid templateId. (Expected: {miniGame.TemplateId}) - (Actual: {request.TemplateId})";
                 return response;
             }
 
+            // Checking TeacherId
+            if (miniGame.TeacherId.Trim().Equals(request.GetTeacherId(), StringComparison.Ordinal))
+            {
+                response.Message = $"Invalid TeacherId. (Expected: {miniGame.TeacherId}) - (Actual: {request.GetTeacherId()})";
+                return response;
+            }
+
+            // Update MiniGame properties
             try
             {
                 await _unitOfWork.BeginTransactionAsync();
 
-                // Set request data to miniGame
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
                 miniGame.DataText = SerializeQuestions(request.GameData);
-                miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
+                miniGame.ThumbnailImage = $"users/{miniGame.MinigameId.Trim()}_thumbnail{fileExtention}";
                 await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
 
                 await _unitOfWork.CommitTransactionAsync();
@@ -194,14 +226,14 @@ namespace Hybrid.Services.Services
                 response.Message = "Failed to update Minigame";
                 return response;
             }
-            var updatedMinigame = await _unitOfWork.MiniGameRepo.GetFirstWithIncludeAsync(
+            miniGame = await _unitOfWork.MiniGameRepo.GetFirstWithIncludeAsync(
                 x => x.MinigameId == miniGame.MinigameId,
                 x => x.Template
             );
 
             response.IsSuccess = true;
             response.Message = "Updated minigame successfully.";
-            response.Model = updatedMinigame!.ToAddMiniGameResponseModel();
+            response.Model = miniGame!.ToAddMiniGameResponseModel();
             return response;
         }
 

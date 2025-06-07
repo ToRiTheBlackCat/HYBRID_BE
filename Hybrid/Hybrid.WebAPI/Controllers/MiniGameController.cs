@@ -182,9 +182,9 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("conjunction")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request)
+        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<ConjunctionQuestion>(request);
+            return await UpdateMiniGame<ConjunctionQuestion>(request, fakeTeacherId);
         }
 
         /// <summary>
@@ -196,9 +196,9 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("quiz")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<QuizQuestion> request)
+        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<QuizQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<QuizQuestion>(request);
+            return await UpdateMiniGame<QuizQuestion>(request, fakeTeacherId);
         }
 
         /// <summary>
@@ -210,9 +210,9 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("anagram")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<AnagramQuestion> request)
+        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<AnagramQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<AnagramQuestion>(request);
+            return await UpdateMiniGame<AnagramQuestion>(request, fakeTeacherId);
         }
 
         /// <summary>
