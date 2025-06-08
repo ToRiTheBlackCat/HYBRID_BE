@@ -3,6 +3,7 @@ using Hybrid.Services.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,14 @@ namespace Hybrid.WebAPI.Controllers
             _miniGameService = miniGameService;
         }
 
+
+        /// <summary>
+        /// API_Get All Minigame Templates
+        /// Created By: TuanCA
+        /// Created Date: 27/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpGet("templates")]
         public async Task<ActionResult<List<GetMinigameTemplatesModel>>> GetMinigametTemplates()
         {
@@ -142,8 +151,6 @@ namespace Hybrid.WebAPI.Controllers
             return await AddMiniGame(request);
         }
 
-
-
         /// <summary>
         /// API_Add RandomCard Minigame
         /// Created By: TuanCA
@@ -152,7 +159,8 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("random-card")]
-        public async Task<ActionResult<AddMiniGameResponse>> AddRandomCard([FromForm] AddMiniGameRequest<RandomCard> request)
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddRandomCard([FromForm] AddMiniGameRequest<RandomCardQuestion> request)
         {
             return await AddMiniGame(request);
         }
@@ -195,7 +203,7 @@ namespace Hybrid.WebAPI.Controllers
         }
 
         /// <summary>
-        /// API_Add Conjunction Minigame
+        /// API_Update Conjunction Minigame
         /// Created By: TuanCA
         /// Created Date: 27/5/2025
         /// Updated By: X
@@ -205,11 +213,11 @@ namespace Hybrid.WebAPI.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateConjunction([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<ConjunctionQuestion>(request, fakeTeacherId);
+            return await UpdateMiniGame(request, fakeTeacherId);
         }
 
         /// <summary>
-        /// API_Add Quiz Minigame
+        /// API_Update Quiz Minigame
         /// Created By: TuanCA
         /// Created Date: 27/5/2025
         /// Updated By: X
@@ -219,11 +227,11 @@ namespace Hybrid.WebAPI.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateQuiz([FromForm] UpdateMinigameRequest<QuizQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<QuizQuestion>(request, fakeTeacherId);
+            return await UpdateMiniGame(request, fakeTeacherId);
         }
 
         /// <summary>
-        /// API_Add Anagram Minigame
+        /// API_Update Anagram Minigame
         /// Created By: TuanCA
         /// Created Date: 27/5/2025
         /// Updated By: X
@@ -233,7 +241,21 @@ namespace Hybrid.WebAPI.Controllers
         [Consumes("multipart/form-data")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateAnagram([FromForm] UpdateMinigameRequest<AnagramQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame<AnagramQuestion>(request, fakeTeacherId);
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update RandomCard Minigame
+        /// Created By: TuanCA
+        /// Created Date: 08/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("random-card")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateRandomCard([FromForm] UpdateMinigameRequest<RandomCardQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
         }
 
         /// <summary>
@@ -266,7 +288,6 @@ namespace Hybrid.WebAPI.Controllers
             }
 
             var result = await _miniGameService.UpdateMiniGameAsync(request, Path.GetExtension(request.ImageFile.FileName));
-
             if (!result.IsSuccess)
             {
                 return Ok(result);
@@ -276,6 +297,9 @@ namespace Hybrid.WebAPI.Controllers
             // Save images for each minigame question
             if (request.GameData is IEnumerable<IMinigameWithPicture>)
             {
+                // Delete old images before saving new ones
+                DeleteImagesById(result.Model.MinigameId.Trim());
+
                 request.GameData.ForEach(x =>
                 {
                     var minigame = x as IMinigameWithPicture;
@@ -308,7 +332,41 @@ namespace Hybrid.WebAPI.Controllers
             return fileName;
         }
 
+        /// <summary>
+        /// FUNC - Delete old images associated with the Minigame that match minigameId
+        /// </summary>
+        /// <param name="minigameId">The ID of the deleted Minigame</param>
+        private void DeleteImagesById(string minigameId)
+        {
+            string folderPath = Path.Combine(_env.WebRootPath, "images", "users");
+            if (!Directory.Exists(folderPath))
+                return;
 
+            // Regex pattern: matches filenames like "MG123_img1.jpg", "MG123_img2.png", etc.
+            string pattern = $@"^{minigameId}_img\d+\.\w+$";
+
+            Regex regex = new Regex(pattern);
+
+            foreach (string filePath in Directory.GetFiles(folderPath))
+            {
+                string fileName = Path.GetFileName(filePath);
+
+                if (regex.IsMatch(fileName))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+        }
+
+
+
+        /// <summary>
+        /// API_Delete Minigame
+        /// Created By: TuanCA
+        /// Created Date: 28/5/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpDelete]
         public async Task<ActionResult<DeleteMinigameResponse>> DeleteMinigame([Required] string minigameId)
         {
@@ -326,9 +384,11 @@ namespace Hybrid.WebAPI.Controllers
 
                 if (System.IO.File.Exists(filePath))
                 {
-
                     System.IO.File.Delete(filePath);
                 }
+
+                // Delete old images associated with the minigame
+                DeleteImagesById(result.Minigame.MinigameId.Trim());
             }
 
             return Ok(result);

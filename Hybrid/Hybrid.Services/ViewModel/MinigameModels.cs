@@ -64,7 +64,7 @@ namespace Hybrid.Services.ViewModel
     }
 
     [XmlRoot("question")]
-    public class RandomCard : MinigameModels, IMinigameWithPicture
+    public class RandomCardQuestion : MinigameModels, IMinigameWithPicture
     {
         [XmlElement("text")]
         [Required]

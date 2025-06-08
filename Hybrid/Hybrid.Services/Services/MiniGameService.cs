@@ -234,6 +234,16 @@ namespace Hybrid.Services.Services
 
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
+
+                if (request.GameData[0] is IMinigameWithPicture)
+                {
+                    for (int i = 0; i < request.GameData.Count; i++)
+                    {
+                        var question = request.GameData[i] as IMinigameWithPicture;
+                        question!.ImagePath = $"users/{miniGame.MinigameId.Trim()}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                    }
+                }
+
                 miniGame.DataText = SerializeQuestions(request.GameData);
                 miniGame.ThumbnailImage = $"users/{miniGame.MinigameId.Trim()}_thumbnail{fileExtention}";
                 await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
