@@ -1,5 +1,6 @@
 ﻿using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Profile;
+using Hybrid.Services.ViewModel.SignUp;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;

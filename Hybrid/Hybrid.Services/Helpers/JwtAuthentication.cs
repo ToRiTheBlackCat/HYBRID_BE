@@ -1,6 +1,6 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Repositories.Repos;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Others;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;

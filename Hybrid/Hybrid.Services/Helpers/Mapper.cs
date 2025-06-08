@@ -1,6 +1,12 @@
 ﻿using Azure.Core;
 using Hybrid.Repositories.Models;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Course;
+using Hybrid.Services.ViewModel.Minigame;
+using Hybrid.Services.ViewModel.Profile;
+using Hybrid.Services.ViewModel.Rating;
+using Hybrid.Services.ViewModel.SignUp;
+using Hybrid.Services.ViewModel.SupscriptionExtention;
+using Hybrid.Services.ViewModel.Tier;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -184,7 +190,7 @@ namespace Hybrid.Services.Helpers
                 ThumbnailImage = minigame.ThumbnailImage.Trim(),
                 TeacherId = minigame.TeacherId.Trim(),
                 TeacherName = minigame.Teacher.FullName.Trim(),
-                CourseId= minigame.CourseId.Trim(),
+                CourseId = minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
                 ParticipantsCount = minigame.ParticipantsCount,
                 RatingScore = minigame.RatingScore,
@@ -277,6 +283,40 @@ namespace Hybrid.Services.Helpers
                 Image = template.Image.Trim(),
                 Summary = template.Summary.Trim(),
             };
+        }
+
+        public static Rating Map_CreateRatingRequest_To_Rating(this CreateRatingRequest request)
+        {
+            return new Rating()
+            {
+                StudentId = request.StudentId.Trim(),
+                MinigameId = request.MinigameId.Trim(),
+                Score = request.Score,
+                Comment = request.Comment,
+                CreatedDate = DateTime.UtcNow
+            };
+        }
+
+        public static List<GetAllRatingResponse> Map_ListRating_To_ListGetAllRatingResponse(this List<Rating> list)
+        {
+            var mappedList = new List<GetAllRatingResponse>();
+
+            foreach (Rating rating in list)
+            {
+                var ratingResponse = new GetAllRatingResponse
+                {
+                    StudentId = rating.StudentId.Trim(),
+                    StudentName = rating.Student.FullName.Trim(),
+                    MinigameId = rating.MinigameId.Trim(),
+                    Score = rating.Score,
+                    Comment = rating.Comment,
+                    CreatedDate = rating.CreatedDate
+                };
+
+                mappedList.Add(ratingResponse);
+            }
+
+            return mappedList;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Course;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;

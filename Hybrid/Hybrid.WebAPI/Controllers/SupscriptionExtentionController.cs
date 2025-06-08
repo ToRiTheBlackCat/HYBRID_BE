@@ -1,6 +1,6 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.SupscriptionExtention;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
