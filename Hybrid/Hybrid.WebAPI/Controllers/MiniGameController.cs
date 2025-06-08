@@ -1,10 +1,6 @@
-﻿using Azure;
-using Hybrid.Services.Services;
+﻿using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 
@@ -113,9 +109,9 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("conjunction")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddMiniGame([FromForm] AddMiniGameRequest<ConjunctionQuestion> request)
+        public async Task<ActionResult<AddMiniGameResponse>> AddConjunction([FromForm] AddMiniGameRequest<ConjunctionQuestion> request)
         {
-            return await AddMiniGame<ConjunctionQuestion>(request);
+            return await AddMiniGame(request);
         }
 
         /// <summary>
@@ -127,9 +123,9 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("quiz")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddMiniGame([FromForm] AddMiniGameRequest<QuizQuestion> request)
+        public async Task<ActionResult<AddMiniGameResponse>> AddQuiz([FromForm] AddMiniGameRequest<QuizQuestion> request)
         {
-            return await AddMiniGame<QuizQuestion>(request);
+            return await AddMiniGame(request);
         }
 
         /// <summary>
@@ -141,22 +137,37 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("anagram")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddMiniGame([FromForm] AddMiniGameRequest<AnagramQuestion> request)
+        public async Task<ActionResult<AddMiniGameResponse>> AddAnagram([FromForm] AddMiniGameRequest<AnagramQuestion> request)
         {
-            return await AddMiniGame<AnagramQuestion>(request);
+            return await AddMiniGame(request);
+        }
+
+
+
+        /// <summary>
+        /// API_Add RandomCard Minigame
+        /// Created By: TuanCA
+        /// Created Date: 08/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("random-card")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddRandomCard([FromForm] AddMiniGameRequest<RandomCard> request)
+        {
+            return await AddMiniGame(request);
         }
 
         /// <summary>
         /// Generic method to handle adding minigames
         /// </summary>
-        private async Task<IActionResult> AddMiniGame<T>([FromForm] AddMiniGameRequest<T> request) where T : MinigameModels
+        private async Task<ActionResult<AddMiniGameResponse>> AddMiniGame<T>([FromForm] AddMiniGameRequest<T> request) where T : MinigameModels
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (!request.GameData.Any())
+            if (request.GameData == null || !request.GameData.Any())
             {
                 ModelState.AddModelError(nameof(request.GameData), "The GameData field must have atleast one item.");
                 return BadRequest(ModelState);
@@ -170,6 +181,16 @@ namespace Hybrid.WebAPI.Controllers
 
             var _ = SaveImage(request.ImageFile, result.Model!.ThumbnailImage);
 
+            // Save images for each minigame question
+            if (request.GameData is IEnumerable<IMinigameWithPicture>)
+            {
+                request.GameData.ForEach(x =>
+                {
+                    var minigame = x as IMinigameWithPicture;
+                    SaveImage(minigame!.Image, minigame!.ImagePath);
+                });
+            }
+
             return Ok(result);
         }
 
@@ -182,7 +203,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("conjunction")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request, string fakeTeacherId = "")
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateConjunction([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame<ConjunctionQuestion>(request, fakeTeacherId);
         }
@@ -196,7 +217,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("quiz")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<QuizQuestion> request, string fakeTeacherId = "")
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateQuiz([FromForm] UpdateMinigameRequest<QuizQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame<QuizQuestion>(request, fakeTeacherId);
         }
@@ -210,7 +231,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("anagram")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> UpdateMiniGame([FromForm] UpdateMinigameRequest<AnagramQuestion> request, string fakeTeacherId = "")
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateAnagram([FromForm] UpdateMinigameRequest<AnagramQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame<AnagramQuestion>(request, fakeTeacherId);
         }
@@ -220,7 +241,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         /// <param name="fakeTeacherId">TeacherId for testing without Authentication</param>
         /// <returns></returns>
-        private async Task<IActionResult> UpdateMiniGame<T>(UpdateMinigameRequest<T> request, string fakeTeacherId = "") where T : MinigameModels
+        private async Task<ActionResult<UpdateMinigameResponse>> UpdateMiniGame<T>(UpdateMinigameRequest<T> request, string fakeTeacherId = "") where T : MinigameModels
         {
             if (!ModelState.IsValid)
             {
@@ -251,6 +272,16 @@ namespace Hybrid.WebAPI.Controllers
                 return Ok(result);
             }
             var _ = SaveImage(request.ImageFile, result.Model!.ThumbnailImage);
+
+            // Save images for each minigame question
+            if (request.GameData is IEnumerable<IMinigameWithPicture>)
+            {
+                request.GameData.ForEach(x =>
+                {
+                    var minigame = x as IMinigameWithPicture;
+                    SaveImage(minigame!.Image, minigame!.ImagePath);
+                });
+            }
 
             return Ok(result);
         }
@@ -302,5 +333,7 @@ namespace Hybrid.WebAPI.Controllers
 
             return Ok(result);
         }
+
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,7 +10,11 @@ using System.Xml.Serialization;
 
 namespace Hybrid.Services.ViewModel
 {
-
+    public interface IMinigameWithPicture
+    {
+        public string ImagePath { get; set; }
+        public IFormFile Image { get; set; }
+    }
 
     public class MinigameModels
     {
@@ -58,5 +63,20 @@ namespace Hybrid.Services.ViewModel
         public string Word { get; set; }
     }
 
+    [XmlRoot("question")]
+    public class RandomCard : MinigameModels, IMinigameWithPicture
+    {
+        [XmlElement("text")]
+        [Required]
+        public string Text { get; set; }
 
+        private string imagePath = string.Empty;
+
+        [XmlElement("image")]
+        public string ImagePath { get => imagePath; set => imagePath = value; }
+
+        [Required]
+        [XmlIgnore]
+        public IFormFile Image { get; set; }
+    }
 }
