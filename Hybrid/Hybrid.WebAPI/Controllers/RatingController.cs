@@ -59,6 +59,15 @@ namespace Hybrid.WebAPI.Controllers
             });
         }
 
+        /// <summary>
+        /// API_GetScoreOfMinigame
+        /// minigameId_string
+        /// RatingScore
+        /// Created By: TriNHM
+        /// Created Date: 8/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpGet("score-{minigameId}")]
         public async Task<ActionResult> GetScoreOfMinigame(string minigameId)
         {
