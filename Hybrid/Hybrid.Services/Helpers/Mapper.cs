@@ -1,7 +1,7 @@
 ﻿using Azure.Core;
 using Hybrid.Repositories.Models;
 using Hybrid.Services.ViewModel.Course;
-using Hybrid.Services.ViewModel.Minigame;
+using Hybrid.Services.ViewModel.Minigames;
 using Hybrid.Services.ViewModel.Profile;
 using Hybrid.Services.ViewModel.Rating;
 using Hybrid.Services.ViewModel.SignUp;

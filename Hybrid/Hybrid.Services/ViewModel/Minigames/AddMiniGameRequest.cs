@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Hybrid.Services.ViewModel.Minigame
+namespace Hybrid.Services.ViewModel.Minigames
 {
     public class AddMiniGameRequest<T> : IValidatableObject where T : MinigameModels
     {

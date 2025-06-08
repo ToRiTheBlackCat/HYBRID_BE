@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel.Minigame;
+using Hybrid.Services.ViewModel.Minigames;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;

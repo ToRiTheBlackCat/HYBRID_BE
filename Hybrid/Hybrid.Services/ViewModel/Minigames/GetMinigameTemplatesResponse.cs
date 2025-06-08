@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hybrid.Services.ViewModel.Minigame
+namespace Hybrid.Services.ViewModel.Minigames
 {
     public class GetMinigameTemplatesResponse
     {

@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Hybrid.Services.ViewModel.Minigame
+namespace Hybrid.Services.ViewModel.Minigames
 {
     public class UpdateMinigameRequest<T> where T : MinigameModels
     {

@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Hybrid.Services.ViewModel.Minigame
+namespace Hybrid.Services.ViewModel.Minigames
 {
 
 

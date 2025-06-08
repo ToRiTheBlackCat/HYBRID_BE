@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hybrid.Services.ViewModel.Minigame
+namespace Hybrid.Services.ViewModel.Minigames
 {
-    public class UpdateMinigameResponse
+    public class AddMiniGameResponse
     {
-        public bool IsSuccess { get; set; } = false;
+        public bool IsSuccess { get; set; }
         public string Message { get; set; } = "";
         public AddMiniGameResponseModel? Model { get; set; }
     }
 
-    public class UpdateMiniGameModel
+    public class AddMiniGameResponseModel
     {
         public string MinigameId { get; set; }
 
