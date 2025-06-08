@@ -16,6 +16,7 @@ namespace Hybrid.Services.Services
     {
         Task<List<GetAllRatingResponse>?> GetAllRatingByMinigameId(string minigameId);
         Task<(bool, string)> CreateRating(CreateRatingRequest request);
+        Task<double> GetScoreOfMinigame(string minigameId);
 
     }
     public class RatingService : IRatingService
@@ -63,6 +64,28 @@ namespace Hybrid.Services.Services
             var mappedList = ratingList.Map_ListRating_To_ListGetAllRatingResponse();
 
             return mappedList;
+        }
+
+        public async Task<double> GetScoreOfMinigame(string minigameId)
+        {
+            var ratingScore = new double();
+            var ratingCount = 0;
+
+            var ratingList = await _unitOfWork.RatingRepo.GetAllByMinigameId(minigameId);
+            if (ratingList == null || ratingList.Count == 0)
+            {
+                return ratingScore;
+            }
+
+            foreach (var rating in ratingList)
+            {
+                ratingScore += rating.Score;
+                ratingCount++;
+            }
+            ratingScore /= ratingCount;
+
+            return ratingScore;
+
         }
     }
 }

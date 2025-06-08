@@ -52,13 +52,21 @@ namespace Hybrid.WebAPI.Controllers
 
             var (isSuccess, message) = await _ratingService.CreateRating(request);
 
-
             return Ok(new
             {
                 isSuccess,
                 message
             });
+        }
 
+        [HttpGet("score-{minigameId}")]
+        public async Task<ActionResult> GetScoreOfMinigame(string minigameId)
+        {
+            var ratingScore = await _ratingService.GetScoreOfMinigame(minigameId);
+            return Ok(new
+            {
+                RatingScore = ratingScore
+            });
         }
     }
 }
