@@ -142,9 +142,29 @@ namespace Hybrid.Services.Services
                 return response;
             }
 
+            // Check valid CourseId
+            var course = await _unitOfWork.CourseRepo.GetByIdAsync(request.CourseId);
+            if (course == null)
+            {
+                response.Message = $"Error: Course not found. (Input: {request.CourseId})";
+                return response;
+            }
+
+            // Set up the MiniGame object for adding to the database
             var miniGame = request.ToMiniGame();
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
             miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
+
+            if (request.GameData[0] is IMinigameWithPicture)
+            {
+                for (int i = 0; i < request.GameData.Count; i++)
+                {
+                    var question = request.GameData[i] as IMinigameWithPicture;
+                    question!.ImagePath = $"users/{miniGame.MinigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                }
+            }
+
+            // Serialize the questions into XML format
             miniGame.DataText = SerializeQuestions(request.GameData);
 
             try
@@ -201,7 +221,7 @@ namespace Hybrid.Services.Services
             }
 
             // Checking TeacherId
-            if (miniGame.TeacherId.Trim().Equals(request.GetTeacherId(), StringComparison.Ordinal))
+            if (!miniGame.TeacherId.Trim().Equals(request.GetTeacherId()))
             {
                 response.Message = $"Invalid TeacherId. (Expected: {miniGame.TeacherId}) - (Actual: {request.GetTeacherId()})";
                 return response;
@@ -214,6 +234,16 @@ namespace Hybrid.Services.Services
 
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
+
+                if (request.GameData[0] is IMinigameWithPicture)
+                {
+                    for (int i = 0; i < request.GameData.Count; i++)
+                    {
+                        var question = request.GameData[i] as IMinigameWithPicture;
+                        question!.ImagePath = $"users/{miniGame.MinigameId.Trim()}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                    }
+                }
+
                 miniGame.DataText = SerializeQuestions(request.GameData);
                 miniGame.ThumbnailImage = $"users/{miniGame.MinigameId.Trim()}_thumbnail{fileExtention}";
                 await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
