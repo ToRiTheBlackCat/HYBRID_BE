@@ -150,9 +150,21 @@ namespace Hybrid.Services.Services
                 return response;
             }
 
+            // Set up the MiniGame object for adding to the database
             var miniGame = request.ToMiniGame();
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
             miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
+
+            if (request.GameData[0] is IMinigameWithPicture)
+            {
+                for (int i = 0; i < request.GameData.Count; i++)
+                {
+                    var question = request.GameData[i] as IMinigameWithPicture;
+                    question!.ImagePath = $"users/{miniGame.MinigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                }
+            }
+
+            // Serialize the questions into XML format
             miniGame.DataText = SerializeQuestions(request.GameData);
 
             try
@@ -222,6 +234,16 @@ namespace Hybrid.Services.Services
 
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
+
+                if (request.GameData[0] is IMinigameWithPicture)
+                {
+                    for (int i = 0; i < request.GameData.Count; i++)
+                    {
+                        var question = request.GameData[i] as IMinigameWithPicture;
+                        question!.ImagePath = $"users/{miniGame.MinigameId.Trim()}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                    }
+                }
+
                 miniGame.DataText = SerializeQuestions(request.GameData);
                 miniGame.ThumbnailImage = $"users/{miniGame.MinigameId.Trim()}_thumbnail{fileExtention}";
                 await _unitOfWork.MiniGameRepo.UpdateAsync(miniGame);
