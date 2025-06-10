@@ -1,6 +1,6 @@
 ﻿using Hybrid.Repositories.Base;
 using Hybrid.Services.Helpers;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Minigames;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using System;

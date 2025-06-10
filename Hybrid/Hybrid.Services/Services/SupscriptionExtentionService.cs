@@ -2,7 +2,7 @@
 using Hybrid.Repositories.Models;
 using Hybrid.Repositories.Repos;
 using Hybrid.Services.Helpers;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.SupscriptionExtention;
 using System;
 using System.Collections.Generic;
 using System.Linq;
