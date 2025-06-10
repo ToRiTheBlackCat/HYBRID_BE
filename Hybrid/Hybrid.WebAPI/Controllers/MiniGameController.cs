@@ -1,5 +1,6 @@
 ﻿using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Minigames;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
