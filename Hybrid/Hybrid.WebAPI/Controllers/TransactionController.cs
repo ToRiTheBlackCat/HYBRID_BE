@@ -1,6 +1,6 @@
 ﻿using Azure.Core;
 using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Transaction;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 

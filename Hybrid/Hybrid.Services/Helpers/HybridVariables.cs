@@ -16,5 +16,8 @@ namespace Hybrid.Services.Helpers
         public static string GmailEmail => Environment.GetEnvironmentVariable("GMAIL_EMAIL") ?? "";
         public static string GmailAppPassword => Environment.GetEnvironmentVariable("GMAIL_APP_PASSWORD") ?? "";
         public static int ResetCodeLength => int.Parse(Environment.GetEnvironmentVariable("RESET_CODE_LENGTH")!);
+        public static string PayOsClientId => Environment.GetEnvironmentVariable("PayOs__ClientId") ?? "";
+        public static string PayOsApiKey => Environment.GetEnvironmentVariable("PayOs__ApiKey") ?? "";
+        public static string PayOsCheckSumKey => Environment.GetEnvironmentVariable("PayOs__ChecksumKey") ?? "";
     }
 }
