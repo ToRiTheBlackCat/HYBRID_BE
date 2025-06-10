@@ -24,16 +24,13 @@ namespace Hybrid.Services.ViewModel.Minigames
         public IFormFile ImageFile { get; set; }
 
         [Required]
-        public string GameDataJson { get; set; }
-
-        [Required]
         public int Duration { get; set; }
 
         [Required]
         public string TemplateId { get; set; }
 
-        public List<T> GameData => !Validate(null).Any() ?
-            JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
+        [Required]
+        public List<T> GameData { get; set; }
 
         private string _teacherId = "";
 
@@ -45,35 +42,6 @@ namespace Hybrid.Services.ViewModel.Minigames
         public void SetTeacherId(string teacherId)
         {
             _teacherId = teacherId;
-        }
-
-        /// <summary>
-        /// Validates the GameDataJson.
-        /// </summary>
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var results = new List<ValidationResult>();
-
-            if (string.IsNullOrWhiteSpace(GameDataJson))
-            {
-                results.Add(new ValidationResult("GameDataJson is required.", new[] { nameof(GameDataJson) }));
-                return results;
-            }
-
-            try
-            {
-                var data = JsonSerializer.Deserialize<List<T>>(GameDataJson);
-                if (data == null)
-                {
-                    results.Add(new ValidationResult("GameDataJson could not be deserialized to the expected type.", new[] { nameof(GameDataJson) }));
-                }
-            }
-            catch (JsonException ex)
-            {
-                results.Add(new ValidationResult($"Invalid JSON format: {ex.Message}", new[] { nameof(GameDataJson) }));
-            }
-
-            return results;
         }
     }
 }

@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Hybrid.Services.ViewModel.Minigames
 {
-    public class AddMiniGameRequest<T> : IValidatableObject where T : MinigameModels
+    public class AddMiniGameRequest<T> where T : MinigameModels
     {
         [Required]
         public string MinigameName { get; set; }
@@ -19,8 +19,8 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public string TeacherId { get; set; }
 
-        [Required]
-        public string GameDataJson { get; set; }
+        //[Required]
+        //public string GameDataJson { get; set; }
 
         [Required]
         public int Duration { get; set; }
@@ -33,9 +33,11 @@ namespace Hybrid.Services.ViewModel.Minigames
 
         public string test; // This is just a placeholder for testing purposes, can be removed later
 
-        [JsonIgnore]
-        public List<T> GameData => !Validate(null).Any() ?
-            JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
+        public List<T> GameData { get; set; }
+
+        //[JsonIgnore]
+        //public List<T> GameData => !this.Validate(null).Any() ?
+        //    JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
 
 
         public Minigame ToMiniGame()
@@ -53,31 +55,31 @@ namespace Hybrid.Services.ViewModel.Minigames
         /// <summary>
         /// Validates the GameDataJson.
         /// </summary>
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var results = new List<ValidationResult>();
+        //public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        //{
+        //    var results = new List<ValidationResult>();
 
-            if (string.IsNullOrWhiteSpace(GameDataJson))
-            {
-                results.Add(new ValidationResult("GameDataJson is required.", new[] { nameof(GameDataJson) }));
-                return results;
-            }
+        //    if (string.IsNullOrWhiteSpace(GameDataJson))
+        //    {
+        //        results.Add(new ValidationResult("GameDataJson is required.", new[] { nameof(GameDataJson) }));
+        //        return results;
+        //    }
 
-            try
-            {
-                var data = JsonSerializer.Deserialize<List<T>>(GameDataJson);
-                if (data == null)
-                {
-                    results.Add(new ValidationResult("GameDataJson could not be deserialized to the expected type.", new[] { nameof(GameDataJson) }));
-                }
-            }
-            catch (JsonException ex)
-            {
-                results.Add(new ValidationResult($"Invalid JSON format: {ex.Message}", new[] { nameof(GameDataJson) }));
-            }
+        //    try
+        //    {
+        //        var data = JsonSerializer.Deserialize<List<T>>(GameDataJson);
+        //        if (data == null)
+        //        {
+        //            results.Add(new ValidationResult("GameDataJson could not be deserialized to the expected type.", new[] { nameof(GameDataJson) }));
+        //        }
+        //    }
+        //    catch (JsonException ex)
+        //    {
+        //        results.Add(new ValidationResult($"Invalid JSON format: {ex.Message}", new[] { nameof(GameDataJson) }));
+        //    }
 
-            return results;
-        }
+        //    return results;
+        //}
     }
 }
 
