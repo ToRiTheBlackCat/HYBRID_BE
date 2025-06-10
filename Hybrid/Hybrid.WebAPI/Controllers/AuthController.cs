@@ -2,7 +2,8 @@
 using Hybrid.Repositories.Base;
 using Hybrid.Services.Helpers;
 using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Login;
+using Hybrid.Services.ViewModel.Others;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -2,7 +2,7 @@
 using Hybrid.Repositories.Base;
 using Hybrid.Repositories.Models;
 using Hybrid.Services.Helpers;
-using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Course;
 using System;
 using System.Collections.Generic;
 using System.Linq;
