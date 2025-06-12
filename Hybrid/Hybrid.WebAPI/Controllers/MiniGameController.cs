@@ -209,8 +209,6 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
             }
 
-
-
             if (request.GameData == null || !request.GameData.Any())
             {
                 ModelState.AddModelError(nameof(request.GameData), "The GameData field must have atleast one item.");
@@ -308,9 +306,9 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("spelling")]
-        public async Task<ActionResult<UpdateMinigameResponse>> UpdateSpelling([FromForm] UpdateMinigameRequest<SpellingQuestion> request)
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateSpelling([FromForm] UpdateMinigameRequest<SpellingQuestion> request, string fakeTeacherId = "")
         {
-            return await UpdateMiniGame(request);
+            return await UpdateMiniGame(request, fakeTeacherId);
         }
         #endregion
 
@@ -356,13 +354,13 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
             }
 
-            request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
-
             if (!request.GameData.Any())
             {
                 ModelState.AddModelError(nameof(request.GameData), "The GameData field must have at least one item.");
                 return BadRequest(ModelState);
             }
+
+            request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
 
             var result = await _miniGameService.UpdateMiniGameAsync(request, Path.GetExtension(request.ImageFile.FileName));
             if (!result.IsSuccess)
