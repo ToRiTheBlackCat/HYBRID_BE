@@ -110,6 +110,7 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(response);
         }
 
+        #region Add Minigame Seperate usages
         /// <summary>
         /// API_Add Conjunction Minigame
         /// Created By: TuanCA
@@ -160,11 +161,24 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("random-card")]
-        [Consumes("multipart/form-data")]
         public async Task<ActionResult<AddMiniGameResponse>> AddRandomCard([FromForm] AddMiniGameRequest<RandomCardQuestion> request)
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add Spelling Minigame
+        /// Created By: TuanCA
+        /// Created Date: 10/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("spelling")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddSpelling([FromForm] AddMiniGameRequest<SpellingQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
+        #endregion
 
         /// <summary>
         /// Generic method to handle adding minigames
@@ -176,11 +190,34 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Validate ImageFile
+            if (IsValidImageFile(request.ImageFile))
+            {
+                if (request.GameData is IEnumerable<IMinigameWithPicture> gameData)
+                {
+                    foreach (var item in gameData)
+                    {
+                        if (!IsValidImageFile(item.Image))
+                        {
+                            return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
+            }
+
+
+
             if (request.GameData == null || !request.GameData.Any())
             {
                 ModelState.AddModelError(nameof(request.GameData), "The GameData field must have atleast one item.");
                 return BadRequest(ModelState);
             }
+
+            request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
 
             var result = await _miniGameService.AddMiniGameAsync(request, Path.GetExtension(request.ImageFile.FileName));
             if (!result.IsSuccess)
@@ -191,18 +228,22 @@ namespace Hybrid.WebAPI.Controllers
             var _ = SaveImage(request.ImageFile, result.Model!.ThumbnailImage);
 
             // Save images for each minigame question
-            if (request.GameData is IEnumerable<IMinigameWithPicture>)
+            if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
             {
-                request.GameData.ForEach(x =>
+                foreach (var item in minigames)
                 {
-                    var minigame = x as IMinigameWithPicture;
-                    SaveImage(minigame!.Image, minigame!.ImagePath);
-                });
+                    SaveImage(item!.Image, item!.ImagePath);
+                }
             }
 
             return Ok(result);
         }
 
+
+
+
+
+        #region Update Minigame Seperate Usages
         /// <summary>
         /// API_Update Conjunction Minigame
         /// Created By: TuanCA
@@ -260,6 +301,20 @@ namespace Hybrid.WebAPI.Controllers
         }
 
         /// <summary>
+        /// API_Update Spelling Minigame
+        /// Created By: TuanCA
+        /// Created Date: 10/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("spelling")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateSpelling([FromForm] UpdateMinigameRequest<SpellingQuestion> request)
+        {
+            return await UpdateMiniGame(request);
+        }
+        #endregion
+
+        /// <summary>
         /// Generic method to handle updating minigames
         /// </summary>
         /// <param name="fakeTeacherId">TeacherId for testing without Authentication</param>
@@ -282,6 +337,27 @@ namespace Hybrid.WebAPI.Controllers
                 request.SetTeacherId(fakeTeacherId);
             }
 
+            // Validate ImageFile
+            if (IsValidImageFile(request.ImageFile))
+            {
+                if (request.GameData is IEnumerable<IMinigameWithPicture> gameData)
+                {
+                    foreach (var item in gameData)
+                    {
+                        if (!IsValidImageFile(item.Image))
+                        {
+                            return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
+            }
+
+            request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
+
             if (!request.GameData.Any())
             {
                 ModelState.AddModelError(nameof(request.GameData), "The GameData field must have at least one item.");
@@ -296,70 +372,19 @@ namespace Hybrid.WebAPI.Controllers
             var _ = SaveImage(request.ImageFile, result.Model!.ThumbnailImage);
 
             // Save images for each minigame question
-            if (request.GameData is IEnumerable<IMinigameWithPicture>)
+            if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
             {
                 // Delete old images before saving new ones
                 DeleteImagesById(result.Model.MinigameId.Trim());
 
-                request.GameData.ForEach(x =>
+                foreach (var item in minigames)
                 {
-                    var minigame = x as IMinigameWithPicture;
-                    SaveImage(minigame!.Image, minigame!.ImagePath);
-                });
+                    SaveImage(item!.Image, item!.ImagePath);
+                }
             }
 
             return Ok(result);
         }
-
-        /// <summary>
-        /// Func_Save image
-        /// Created By: TuanCA
-        /// Created Date: 27/5/2025
-        /// Updated By: X
-        /// Updated Date: X
-        /// </summary>
-        private string SaveImage(IFormFile imageFile, string saveName)
-        {
-            string saveFolder = Path.Combine(_env.WebRootPath, "images", "users");
-            Directory.CreateDirectory(saveFolder); // Ensure the folder exists
-
-            string filePath = Path.Combine(_env.WebRootPath, "images");
-            string fileName = $"{saveName}";
-            string fullPath = Path.Combine(filePath, fileName);
-
-            using var stream = new FileStream(fullPath, FileMode.Create);
-            imageFile.CopyTo(stream);
-
-            return fileName;
-        }
-
-        /// <summary>
-        /// FUNC - Delete old images associated with the Minigame that match minigameId
-        /// </summary>
-        /// <param name="minigameId">The ID of the deleted Minigame</param>
-        private void DeleteImagesById(string minigameId)
-        {
-            string folderPath = Path.Combine(_env.WebRootPath, "images", "users");
-            if (!Directory.Exists(folderPath))
-                return;
-
-            // Regex pattern: matches filenames like "MG123_img1.jpg", "MG123_img2.png", etc.
-            string pattern = $@"^{minigameId}_img\d+\.\w+$";
-
-            Regex regex = new Regex(pattern);
-
-            foreach (string filePath in Directory.GetFiles(folderPath))
-            {
-                string fileName = Path.GetFileName(filePath);
-
-                if (regex.IsMatch(fileName))
-                {
-                    System.IO.File.Delete(filePath);
-                }
-            }
-        }
-
-
 
         /// <summary>
         /// API_Delete Minigame
@@ -395,6 +420,137 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Saves the uploaded image file to the server
+        /// Created By: TuanCA
+        /// Created Date: 10/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        /// <param name="imageFile">The image file</param>
+        /// <param name="savedName">The new name that the file will be saved under</param>
+        /// <returns></returns>
+        private string SaveImage(IFormFile imageFile, string savedName)
+        {
+            string saveFolder = Path.Combine(_env.WebRootPath, "images", "users");
+            Directory.CreateDirectory(saveFolder); // Ensure the folder exists
 
+            string filePath = Path.Combine(_env.WebRootPath, "images");
+            string fileName = $"{savedName}";
+            string fullPath = Path.Combine(filePath, fileName);
+
+            using var stream = new FileStream(fullPath, FileMode.Create);
+            imageFile.CopyTo(stream);
+
+            return fileName;
+        }
+
+        /// <summary>
+        /// FUNC - Delete old images associated with the Minigame that match minigameId
+        /// Created By: TuanCA
+        /// Created Date: 10/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        /// <param name="minigameId">The ID of the deleted Minigame</param>
+        private void DeleteImagesById(string minigameId)
+        {
+            string folderPath = Path.Combine(_env.WebRootPath, "images", "users");
+            if (!Directory.Exists(folderPath))
+                return;
+
+            // Regex pattern: matches filenames like "MG123_img1.jpg", "MG123_img2.png", etc.
+            string pattern = $@"^{minigameId}_img\d+\.\w+$";
+
+            Regex regex = new Regex(pattern);
+
+            foreach (string filePath in Directory.GetFiles(folderPath))
+            {
+                string fileName = Path.GetFileName(filePath);
+
+                if (regex.IsMatch(fileName))
+                {
+                    System.IO.File.Delete(filePath);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates if the uploaded file is a valid image file
+        /// Created By: TuanCA
+        /// Created Date: 10/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        /// <param name="imageFile"></param>
+        /// <returns></returns>
+        private bool IsValidImageFile(IFormFile imageFile)
+        {
+            if (imageFile == null || imageFile.Length == 0)
+                return false;
+
+            var permittedMimeTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp" };
+            if (permittedMimeTypes.Contains(imageFile.ContentType.ToLower()))
+            {
+                var extension = Path.GetExtension(imageFile.FileName).ToLowerInvariant();
+                var validExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                if (validExtensions.Contains(extension))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        private string GetValidMinigameTemplateId(MinigameModels minigame)
+        {
+            string templateId = "";
+
+            switch (minigame)
+            {
+                case ConjunctionQuestion conjunction:
+                    templateId = "TP1";
+                    break;
+                case QuizQuestion quiz:
+                    templateId = "TP2";
+                    break;
+                case AnagramQuestion anagram:
+                    templateId = "TP3";
+                    break;
+                case RandomCardQuestion randomCard:
+                    templateId = "TP4";
+                    break;
+                case SpellingQuestion spelling:
+                    templateId = "TP5";
+                    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP6";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP7";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP8";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP9";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP10";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP11";
+                //    break;
+                //case QuizQuestion quiz:
+                //    templateId = "TP12";
+                //    break;
+                default:
+                    throw new ArgumentException("Invalid minigame type", nameof(minigame));
+            }
+
+            return templateId;
+        }
     }
 }

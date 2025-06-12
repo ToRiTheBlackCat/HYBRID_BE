@@ -31,8 +31,7 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public string CourseId { get; set; }
 
-        public string test; // This is just a placeholder for testing purposes, can be removed later
-
+        [Required]
         public List<T> GameData { get; set; }
 
         //[JsonIgnore]

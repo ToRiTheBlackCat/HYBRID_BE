@@ -43,7 +43,10 @@ namespace Hybrid.Services.Services
         public async Task<List<GetMinigameTemplatesModel>> GetMinigameTemplatesAsync()
         {
             var minigames = await _unitOfWork.MinigameTemplateRepo.GetAllAsync();
-            var result = minigames.Select(x => x.ToGetMinigameTemplateModel()).ToList();
+            var result = minigames
+                .OrderBy(x => int.Parse(x.TemplateId.Substring(2).Trim()))
+                .Select(x => x.ToGetMinigameTemplateModel())
+                .ToList();
 
             return result;
         }
@@ -155,11 +158,11 @@ namespace Hybrid.Services.Services
             miniGame.MinigameId = _unitOfWork.MiniGameRepo.GenerateId(miniGame);
             miniGame.ThumbnailImage = $"users/{miniGame.MinigameId}_thumbnail{fileExtention}";
 
-            if (request.GameData[0] is IMinigameWithPicture)
+            if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
             {
-                for (int i = 0; i < request.GameData.Count; i++)
+                for (int i = 0; i < minigames.Count(); i++)
                 {
-                    var question = request.GameData[i] as IMinigameWithPicture;
+                    var question = minigames.ElementAt(i);
                     question!.ImagePath = $"users/{miniGame.MinigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
                 }
             }
@@ -235,12 +238,14 @@ namespace Hybrid.Services.Services
                 miniGame.MinigameName = request.MinigameName;
                 miniGame.Duration = request.Duration;
 
-                if (request.GameData[0] is IMinigameWithPicture)
+                // Set the path for the images if the minigame has pictures
+                if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
                 {
-                    for (int i = 0; i < request.GameData.Count; i++)
+                    var minigameId = miniGame.MinigameId.Trim();
+                    for (int i = 0; i < minigames.Count(); i++)
                     {
-                        var question = request.GameData[i] as IMinigameWithPicture;
-                        question!.ImagePath = $"users/{miniGame.MinigameId.Trim()}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                        var question = minigames.ElementAt(i);
+                        question!.ImagePath = $"users/{minigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
                     }
                 }
 
