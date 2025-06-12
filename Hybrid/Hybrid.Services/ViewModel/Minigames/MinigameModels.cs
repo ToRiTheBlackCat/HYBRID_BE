@@ -79,4 +79,12 @@ namespace Hybrid.Services.ViewModel.Minigames
         [XmlIgnore]
         public IFormFile Image { get; set; }
     }
+
+    [XmlRoot("question")]
+    public class SpellingQuestion : MinigameModels
+    {
+        [XmlElement("word")]
+        [Required]
+        public string Word { get; set; }
+    }
 }
