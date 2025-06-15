@@ -192,7 +192,7 @@ namespace Hybrid.Services.Helpers
                 TeacherName = minigame.Teacher.FullName.Trim(),
                 CourseId = minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
-                ParticipantsCount = minigame.ParticipantsCount,
+                ParticipantsCount = minigame.StudentAccomplisments.Count(),
                 RatingScore = minigame.RatingScore,
                 TemplateId = minigame.TemplateId.Trim(),
                 TemplateName = minigame.Template.TemplateName.Trim()

@@ -61,6 +61,7 @@ namespace Hybrid.Services.Services
         public async Task<GetAllMinigameResponse> GetMinigameOfCourseAsync(string courseId, GetAllMinigameRequest request)
         {
             var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfCourseAsync(courseId, request.TemplateId, request.MinigameName);
+            //minigames = minigames.OrderBy(x => int.Parse(x.MinigameId.Substring(2))).ToList();
             var result = GetAllMinigameResponse.ToResponse(minigames, request.PageSize, request.PageNum);
 
             return result;
@@ -83,6 +84,7 @@ namespace Hybrid.Services.Services
             }
 
             var minigames = await _unitOfWork.MiniGameRepo.GetMinigamesOfTeacherAsync(teacherId, request.TemplateId, request.MinigameName);
+            //minigames = minigames.OrderBy(x => int.Parse(x.MinigameId.Substring(2))).ToList();
             var result = GetAllMinigameResponse.ToResponse(minigames, request.PageSize, request.PageNum);
 
             return result;
@@ -160,10 +162,18 @@ namespace Hybrid.Services.Services
 
             if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
             {
-                for (int i = 0; i < minigames.Count(); i++)
+                var minigameId = miniGame.MinigameId.Trim();
+                int counter = 0;
+                foreach (var question in minigames)
                 {
-                    var question = minigames.ElementAt(i);
-                    question!.ImagePath = $"users/{miniGame.MinigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                    if (question.Image != null)
+                    {
+                        question.ImagePath = $"users/{minigameId}_img{counter++}{Path.GetExtension(question.Image.FileName)}";
+                    }
+                    else
+                    {
+                        question.ImagePath = ""; // Ensure ImagePath is set even if no image is provided
+                    }
                 }
             }
 
@@ -242,10 +252,17 @@ namespace Hybrid.Services.Services
                 if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
                 {
                     var minigameId = miniGame.MinigameId.Trim();
-                    for (int i = 0; i < minigames.Count(); i++)
+                    int counter = 0;
+                    foreach (var question in minigames)
                     {
-                        var question = minigames.ElementAt(i);
-                        question!.ImagePath = $"users/{minigameId}_img{i}{Path.GetExtension(question!.Image.FileName)}";
+                        if (question.Image != null)
+                        {
+                            question.ImagePath = $"users/{minigameId}_img{counter++}{Path.GetExtension(question.Image.FileName)}";
+                        }
+                        else
+                        {
+                            question.ImagePath = string.Empty; // Ensure ImagePath is set even if no image is provided
+                        }
                     }
                 }
 

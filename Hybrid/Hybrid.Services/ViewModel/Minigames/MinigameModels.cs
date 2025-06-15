@@ -13,7 +13,7 @@ namespace Hybrid.Services.ViewModel.Minigames
     public interface IMinigameWithPicture
     {
         public string ImagePath { get; set; }
-        public IFormFile Image { get; set; }
+        public IFormFile? Image { get; set; }
     }
 
     public class MinigameModels
@@ -81,10 +81,16 @@ namespace Hybrid.Services.ViewModel.Minigames
     }
 
     [XmlRoot("question")]
-    public class SpellingQuestion : MinigameModels
+    public class SpellingQuestion : MinigameModels, IMinigameWithPicture
     {
         [XmlElement("word")]
         [Required]
         public string Word { get; set; }
+
+        [XmlElement("image")]
+        public string ImagePath { get; set; } = string.Empty;
+
+        [XmlIgnore]
+        public IFormFile? Image { get; set; }
     }
 }
