@@ -197,7 +197,7 @@ namespace Hybrid.WebAPI.Controllers
                 {
                     foreach (var item in gameData)
                     {
-                        if (!IsValidImageFile(item.Image))
+                        if (item.Image != null && !IsValidImageFile(item.Image))
                         {
                             return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
                         }
@@ -228,7 +228,7 @@ namespace Hybrid.WebAPI.Controllers
             // Save images for each minigame question
             if (request.GameData is IEnumerable<IMinigameWithPicture> minigames)
             {
-                foreach (var item in minigames)
+                foreach (var item in minigames.Where(x => x.Image != null))
                 {
                     SaveImage(item!.Image, item!.ImagePath);
                 }
@@ -340,9 +340,9 @@ namespace Hybrid.WebAPI.Controllers
             {
                 if (request.GameData is IEnumerable<IMinigameWithPicture> gameData)
                 {
-                    foreach (var item in gameData)
+                    foreach (var item in gameData.Where(x => x.Image != null))
                     {
-                        if (!IsValidImageFile(item.Image))
+                        if (!IsValidImageFile(item.Image!))
                         {
                             return BadRequest("Only image files (JPG, PNG, GIF, WebP) are allowed.");
                         }
@@ -375,9 +375,9 @@ namespace Hybrid.WebAPI.Controllers
                 // Delete old images before saving new ones
                 DeleteImagesById(result.Model.MinigameId.Trim());
 
-                foreach (var item in minigames)
+                foreach (var item in minigames.Where(x => x.Image != null))
                 {
-                    SaveImage(item!.Image, item!.ImagePath);
+                    SaveImage(item.Image!, item!.ImagePath);
                 }
             }
 
