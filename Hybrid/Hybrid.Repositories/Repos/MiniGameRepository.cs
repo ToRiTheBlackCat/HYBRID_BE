@@ -38,7 +38,8 @@ namespace Hybrid.Repositories.Repos
                 .Include(x => x.Template)
                 .Include(x => x.Teacher)
                 .Include(x => x.Ratings)
-                 .Where(x =>
+                .Include(x => x.StudentAccomplisments)
+                .Where(x =>
                     x.CourseId.Trim().Equals(courseId) &&
                     (string.IsNullOrEmpty(templateId) || x.TemplateId.Trim().Equals(templateId)) &&
                     (string.IsNullOrEmpty(minigameName) || x.MinigameName.Trim().Contains(minigameName))
