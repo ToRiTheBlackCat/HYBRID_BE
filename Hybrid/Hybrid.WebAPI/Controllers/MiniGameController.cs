@@ -1,7 +1,11 @@
-﻿using Hybrid.Services.Services;
+﻿using Azure;
+using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel;
+using Hybrid.Services.ViewModel.Accomplishment;
 using Hybrid.Services.ViewModel.Minigames;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Sprache;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
@@ -16,10 +20,12 @@ namespace Hybrid.WebAPI.Controllers
     {
         private readonly IWebHostEnvironment _env;
         private readonly IMiniGameService _miniGameService;
-        public MiniGameController(IWebHostEnvironment env, IMiniGameService miniGameService)
+        private readonly IUserService _userService;
+        public MiniGameController(IWebHostEnvironment env, IMiniGameService miniGameService, IUserService userService)
         {
             _env = env;
             _miniGameService = miniGameService;
+            _userService = userService;
         }
 
 
@@ -34,6 +40,14 @@ namespace Hybrid.WebAPI.Controllers
         public async Task<ActionResult<List<GetMinigameTemplatesModel>>> GetMinigametTemplates()
         {
             var response = await _miniGameService.GetMinigameTemplatesAsync();
+
+            return Ok(response);
+        }
+
+        [HttpGet("top")]
+        public async Task<ActionResult> GetTopMinigames([FromQuery] int count)
+        {
+            var response = await _miniGameService.GetTopMinigamesAsync(count);
 
             return Ok(response);
         }
@@ -178,6 +192,19 @@ namespace Hybrid.WebAPI.Controllers
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add FlashCard Minigame
+        /// Created By: TuanCA
+        /// Created Date: 16/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("flash-card")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddFlashCard([FromForm] AddMiniGameRequest<FlashCardQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
         #endregion
 
         /// <summary>
@@ -236,10 +263,6 @@ namespace Hybrid.WebAPI.Controllers
 
             return Ok(result);
         }
-
-
-
-
 
         #region Update Minigame Seperate Usages
         /// <summary>
@@ -307,6 +330,19 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("spelling")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateSpelling([FromForm] UpdateMinigameRequest<SpellingQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update FlashCard Minigame
+        /// Created By: TuanCA
+        /// Created Date: 16/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("flash-card")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateFlashCard([FromForm] UpdateMinigameRequest<FlashCardQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
         }
@@ -501,7 +537,9 @@ namespace Hybrid.WebAPI.Controllers
             return false;
         }
 
-
+        /// <summary>
+        /// Get the TemplateId based on the type of minigame
+        /// </summary>
         private string GetValidMinigameTemplateId(MinigameModels minigame)
         {
             string templateId = "";
