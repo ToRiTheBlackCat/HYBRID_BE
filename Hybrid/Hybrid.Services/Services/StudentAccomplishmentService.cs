@@ -25,6 +25,13 @@ namespace Hybrid.Services.Services
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Func - Add accomplishment for student
+        /// Created By: TuanCA
+        /// Created Date: 17/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         public async Task<AddAccomplishmentResponse> AddAccomplishmentAsync(AddAccomplishmentRequest request)
         {
             var response = new AddAccomplishmentResponse
@@ -74,7 +81,6 @@ namespace Hybrid.Services.Services
                 return response;
             }
 
-
             response.IsSuccess = true;
             response.Message = "Accomplishment added successfully.";
             return response;
@@ -82,6 +88,10 @@ namespace Hybrid.Services.Services
 
         /// <summary>
         /// Func - Get all accomplishment of student in a minigame
+        /// Created By: TuanCA
+        /// Created Date: 17/06/2025
+        /// Updated By: X
+        /// Updated Date: X
         /// </summary>
         public async Task<List<AccomplishmentViewModel>> GetAccomplishmentsAsync(string studentId, string minigameId)
         {
