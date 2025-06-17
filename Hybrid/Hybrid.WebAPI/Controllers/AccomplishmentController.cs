@@ -51,6 +51,13 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(accomplishments);
         }
 
+        /// <summary>
+        /// API - Post Accomplishment
+        /// Created By: TuanCA
+        /// Created Date: 17/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<AddAccomplishmentResponse>> PostAccomplishment([FromBody] AddAccomplishmentRequest request)
         {
