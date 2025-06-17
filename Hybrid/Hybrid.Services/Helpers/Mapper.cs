@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Hybrid.Repositories.Models;
+using Hybrid.Services.ViewModel.Accomplishment;
 using Hybrid.Services.ViewModel.Course;
 using Hybrid.Services.ViewModel.Minigames;
 using Hybrid.Services.ViewModel.Profile;
@@ -192,8 +193,8 @@ namespace Hybrid.Services.Helpers
                 TeacherName = minigame.Teacher.FullName.Trim(),
                 CourseId = minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
-                ParticipantsCount = minigame.StudentAccomplisments.Count(),
-                RatingScore = minigame.RatingScore,
+                ParticipantsCount = minigame.StudentAccomplisments?.Count() ?? 0,
+                RatingScore = minigame.Ratings.Average(x => x.Score),
                 TemplateId = minigame.TemplateId.Trim(),
                 TemplateName = minigame.Template.TemplateName.Trim()
             };
@@ -317,6 +318,19 @@ namespace Hybrid.Services.Helpers
             }
 
             return mappedList;
+        }
+
+        public static AccomplishmentViewModel ToViewModel(this StudentAccomplisment accomplisment)
+        {
+            return new AccomplishmentViewModel
+            {
+                StudentId = accomplisment.StudentId.Trim(),
+                StudentName = accomplisment.Student?.FullName.Trim() ?? "",
+                MinigameId = accomplisment.MinigameId.Trim(),
+                Score = accomplisment.Score,
+                Duration = accomplisment.Duration,
+                TakenDate = accomplisment.TakenDate
+            };
         }
     }
 }
