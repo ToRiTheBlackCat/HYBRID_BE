@@ -14,7 +14,8 @@ namespace Hybrid.Services.Services
     public interface IStudentAccomplishmentService
     {
         Task<AddAccomplishmentResponse> AddAccomplishmentAsync(AddAccomplishmentRequest request);
-        Task<List<AccomplishmentViewModel>> GetAccomplishmentsAsync(string studentId, string minigameId);
+        Task<List<AccomplishmentViewModel>> GetAccomplishmentsOfMinigame(string minigameId, string studentId);
+        Task<List<StudentAccomplishmentModel>> GetAccomplishmentsOfStudent(string studentId);
     }
 
     public class StudentAccomplishmentService : IStudentAccomplishmentService
@@ -87,13 +88,13 @@ namespace Hybrid.Services.Services
         }
 
         /// <summary>
-        /// Func - Get all accomplishment of student in a minigame
+        /// Func - Get all student accomplishment of a minigame
         /// Created By: TuanCA
         /// Created Date: 17/06/2025
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<List<AccomplishmentViewModel>> GetAccomplishmentsAsync(string studentId, string minigameId)
+        public async Task<List<AccomplishmentViewModel>> GetAccomplishmentsOfMinigame(string minigameId, string studentId)
         {
             studentId = studentId?.Trim() ?? string.Empty;
             minigameId = minigameId.Trim();
@@ -111,6 +112,31 @@ namespace Hybrid.Services.Services
             ).OrderBy(x => x.TakenDate);
 
             return accomplishments.Select(x => x.ToViewModel()).ToList();
+        }
+
+        /// <summary>
+        /// Func - Get all accomplishment of student
+        /// Created By: TuanCA
+        /// Created Date: 17/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<List<StudentAccomplishmentModel>> GetAccomplishmentsOfStudent(string studentId)
+        {
+            var student = _unitOfWork.StudentRepo.GetById(studentId.Trim());
+            if (student == null)
+            {
+                return new List<StudentAccomplishmentModel>();
+            }
+
+            var accomplishments = await _unitOfWork.StudentAccomplishmentRepo
+                .GetAccomplishmentsOfStudentAsync(studentId);
+            if (accomplishments == null || !accomplishments.Any())
+            {
+                return new List<StudentAccomplishmentModel>();
+            }
+
+            return accomplishments.Select(x => x.ToStudentAccomplishmentModel()).ToList();
         }
     }
 }

@@ -27,9 +27,9 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        [HttpGet("{minigameId}")]
+        [HttpGet("minigame/{minigameId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<List<AccomplishmentViewModel>>> GetAction([Required] string minigameId, bool getSelf = true)
+        public async Task<ActionResult<List<AccomplishmentViewModel>>> GetAccomplishmentsOfMinigame([Required] string minigameId, bool getSelf = true)
         {
             if (!ModelState.IsValid)
             {
@@ -43,10 +43,35 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var accomplishments = await _accomplishmentService.GetAccomplishmentsAsync(studentId, minigameId);
+            var accomplishments = await _accomplishmentService.GetAccomplishmentsOfMinigame(minigameId, studentId ?? "");
             if (accomplishments == null || !accomplishments.Any())
             {
                 return NotFound("No accomplishments found for the given student and minigame.");
+            }
+            return Ok(accomplishments);
+        }
+
+        /// <summary>
+        /// API - Get Accomplishments by StudentId and MinigameId
+        /// Created By: TuanCA
+        /// Created Date: 17/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpGet("student")]
+        public async Task<ActionResult<List<StudentAccomplishmentModel>>> GetAccomplishmentsOfStudent()
+        {
+            var studentId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+            if (string.IsNullOrEmpty(studentId))
+            {
+                ModelState.AddModelError("StudentId", "User is not logged-in.");
+                return BadRequest(ModelState);
+            }
+
+            var accomplishments = await _accomplishmentService.GetAccomplishmentsOfStudent(studentId);
+            if (accomplishments == null || !accomplishments.Any())
+            {
+                return NotFound("No accomplishments found for the given student.");
             }
             return Ok(accomplishments);
         }
@@ -75,5 +100,7 @@ namespace Hybrid.WebAPI.Controllers
 
             return Ok(response);
         }
+
+
     }
 }
