@@ -193,8 +193,8 @@ namespace Hybrid.Services.Helpers
                 TeacherName = minigame.Teacher.FullName.Trim(),
                 CourseId = minigame.CourseId.Trim(),
                 Duration = minigame.Duration,
-                ParticipantsCount = minigame.StudentAccomplisments?.Count() ?? 0,
-                RatingScore = minigame.Ratings.Average(x => x.Score),
+                ParticipantsCount = minigame.StudentAccomplisments.Count(),
+                RatingScore = minigame.Ratings.Any() ? minigame.Ratings.Average(x => x.Score) : 0d,
                 TemplateId = minigame.TemplateId.Trim(),
                 TemplateName = minigame.Template.TemplateName.Trim()
             };

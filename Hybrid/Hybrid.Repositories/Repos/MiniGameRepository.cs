@@ -21,6 +21,7 @@ namespace Hybrid.Repositories.Repos
                 .Include(x => x.Template)
                 .Include(x => x.Teacher)
                 .Include(x => x.Ratings)
+                .Include(x => x.StudentAccomplisments)
                 .Where(x =>
                     x.TeacherId.Trim().Equals(teacherId) &&
                     (string.IsNullOrEmpty(templateId) || x.TemplateId.Trim().Equals(templateId)) &&
