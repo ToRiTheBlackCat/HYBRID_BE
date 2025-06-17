@@ -1,5 +1,6 @@
 ﻿using Hybrid.Repositories.Base;
 using Hybrid.Repositories.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,16 @@ namespace Hybrid.Repositories.Repos
     {
         public StudentAccomplishmentRepository(HybridDBContext context) : base(context)
         {
+        }
+
+        public async Task<List<StudentAccomplisment>> GetAccomplishmentsOfStudentAsync(string studentId)
+        {
+            return await _dbSet
+                .Where(a => a.StudentId == studentId)
+                .Include(a => a.Minigame).ThenInclude(m => m.Course)
+                .Include(a => a.Minigame).ThenInclude(m => m.Template)
+                .Include(a => a.Student)
+                .ToListAsync();
         }
     }
 }
