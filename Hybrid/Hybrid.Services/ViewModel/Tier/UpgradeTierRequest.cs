@@ -11,6 +11,8 @@ namespace Hybrid.Services.ViewModel.Tier
     {
         [Required]
         public string UserId { get; set; }
+    
+        public long OrderCode {  get; set; }
 
         public bool IsTeacher { get; set; }
 

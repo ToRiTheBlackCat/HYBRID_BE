@@ -2,12 +2,14 @@
 using Hybrid.Repositories.Models;
 using Hybrid.Repositories.Repos;
 using Hybrid.Services.Helpers;
+using Hybrid.Services.ViewModel.Payment;
 using Hybrid.Services.ViewModel.Tier;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Hybrid.Services.Constant.ConstantEnum;
 
 namespace Hybrid.Services.Services
 {
@@ -26,10 +28,12 @@ namespace Hybrid.Services.Services
         private TeacherTierRepository _teacherTierRepo => _unitOfWork.TeacherTierRepo;
 
         private readonly UnitOfWork _unitOfWork;
+        private readonly IPaymentService _paymentService;
 
-        public TierService(UnitOfWork unitOfWork)
+        public TierService(UnitOfWork unitOfWork, IPaymentService paymentService)
         {
             _unitOfWork = unitOfWork;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -105,25 +109,43 @@ namespace Hybrid.Services.Services
         /// </summary>
         public async Task<(bool, string)> UpgradeTierOfUser(UpgradeTierRequest request)
         {
-            if (request.IsTeacher)
-            {
-                var foundTeacher = await _unitOfWork.TeacherRepo.GetByIdAsync(request.UserId);
-                if (foundTeacher == null)
-                    return (false, "Cannot find teacher with that Id");
+            PayOsClient payOsClient = new PayOsClient();
+            var (orderCode, status) = await _paymentService.GetPaymentResponse(request.OrderCode, payOsClient);
 
-                foundTeacher.TierId = request.TierId;
-                await _unitOfWork.TeacherRepo.UpdateAsync(foundTeacher);
-                return (true, "Upgrade success");
+            if (status.Equals(PayOsStatus.PENDING))
+            {
+                return (false, "Payment must paid before upgrading tier");
+            }
+            else if (status.Equals(PayOsStatus.CANCELLED))
+            {
+                return (false, "Payment was canceled upgrade tier fail");
             }
             else
             {
-                var foundStudent = await _unitOfWork.StudentRepo.GetByIdAsync(request.UserId);
-                if (foundStudent == null)
-                    return (false, "Cannot find student with that Id");
+                if (request.IsTeacher)
+                {
+                    var foundTeacher = await _unitOfWork.TeacherRepo.GetByIdAsync(request.UserId);
+                    if (foundTeacher == null)
+                    {
+                        return (false, "Cannot find teacher with that Id");
+                    }
+                    foundTeacher.TierId = request.TierId;
+                    await _unitOfWork.TeacherRepo.UpdateAsync(foundTeacher);
 
-                foundStudent.TierId = request.TierId;
-                await _unitOfWork.StudentRepo.UpdateAsync(foundStudent);
-                return (true, "Upgrade success");
+                    return (true, "Upgrade success");
+                }
+                else
+                {
+                    var foundStudent = await _unitOfWork.StudentRepo.GetByIdAsync(request.UserId);
+                    if (foundStudent == null)
+                    {
+                        return (false, "Cannot find student with that Id");
+                    }
+                    foundStudent.TierId = request.TierId;
+                    await _unitOfWork.StudentRepo.UpdateAsync(foundStudent);
+
+                    return (true, "Upgrade success");
+                }
             }
         }
     }
