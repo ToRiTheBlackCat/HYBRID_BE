@@ -332,5 +332,22 @@ namespace Hybrid.Services.Helpers
                 TakenDate = accomplisment.TakenDate
             };
         }
+
+        public static StudentAccomplishmentModel ToStudentAccomplishmentModel(this StudentAccomplisment accomplisment)
+        {
+            return new StudentAccomplishmentModel
+            {
+                StudentId = accomplisment.StudentId.Trim(),
+                MinigameId = accomplisment.MinigameId.Trim(),
+                MinigameName = accomplisment.Minigame.MinigameName.Trim(),
+                ThumbnailImage = accomplisment.Minigame.ThumbnailImage,
+                TemplateId = accomplisment.Minigame.TemplateId.Trim(),
+                TemplateName = accomplisment.Minigame.Template.TemplateName.Trim(),
+                CourseId = accomplisment.Minigame.CourseId.Trim(),
+                CourseName = accomplisment.Minigame.Course.CourseName.Trim(),
+                Score = accomplisment.Score,
+                TakenDate = accomplisment.TakenDate
+            };
+        }
     }
 }
