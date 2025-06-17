@@ -16,7 +16,9 @@ namespace Hybrid.Services.Services
 {
     public interface IPaymentService
     {
-        Task<string> CreatePaymentRequest(CreatePaymentRequest request, PayOsClient header);
+        Task<(long, string)> CreatePaymentRequest(CreatePaymentRequest request, PayOsClient client);
+        Task<(long, string)> GetPaymentResponse(long id, PayOsClient client);
+
     }
     public class PaymentService : IPaymentService
     {
@@ -24,10 +26,9 @@ namespace Hybrid.Services.Services
         {
 
         }
-        public async Task<string> CreatePaymentRequest(CreatePaymentRequest request, PayOsClient client)
+        public async Task<(long, string)> CreatePaymentRequest(CreatePaymentRequest request, PayOsClient client)
         {
             PayOS payOS = new PayOS(client.ClientId, client.ApiKey, client.ChecksumKey);
-
             var payOsRequest = new CreatePayOsRequest
             {
                 OrderCode = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
@@ -47,10 +48,17 @@ namespace Hybrid.Services.Services
                  buyerName: payOsRequest.BuyerName,
                  expiredAt: payOsRequest.ExpiredAt
              );
-
             CreatePaymentResult response = await payOS.createPaymentLink(convertedPaymentData);
 
-            return response.checkoutUrl;
+            return (response.orderCode, response.checkoutUrl);
+        }
+
+        public async Task<(long,string)> GetPaymentResponse(long id, PayOsClient client)
+        {
+            PayOS payOS = new PayOS(client.ClientId, client.ApiKey, client.ChecksumKey);
+            var response = await payOS.getPaymentLinkInformation(id);
+
+            return (response.orderCode, response.status);
         }
     }
 }
