@@ -20,5 +20,11 @@ namespace Hybrid.Services.Constant
             CONFIRMED = 2,
             CANCELED = 3
         }
+        public static class PayOsStatus
+        {
+            public const string PENDING = "PENDING";
+            public const string CANCELLED = "CANCELLED";
+            public const string PAID = "PAID";
+        }
     }
 }
