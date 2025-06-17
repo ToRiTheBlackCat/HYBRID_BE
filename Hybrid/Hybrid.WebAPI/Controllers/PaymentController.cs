@@ -28,16 +28,38 @@ namespace Hybrid.WebAPI.Controllers
         [HttpPost("payment-requests")]
         public async Task<ActionResult> CreatePaymentRequest([FromBody] CreatePaymentRequest request)
         {
-            PayOsClient client = new PayOsClient
+            PayOsClient client = new PayOsClient();
+
+            var (orderCode, checkoutUrl) = await _paymentService.CreatePaymentRequest(request, client);
+
+            return Ok(new
             {
-                ClientId = HybridVariables.PayOsClientId,
-                ApiKey = HybridVariables.PayOsApiKey,
-                ChecksumKey = HybridVariables.PayOsCheckSumKey
-            };
+                orderCode,
+                checkoutUrl,
+            });
+        }
 
-            var checkoutUrl = await _paymentService.CreatePaymentRequest(request, client);
+        /// <summary>
+        /// API_CheckPaymentResponse
+        /// id_long
+        /// orderCode_long / status_string
+        /// Created By: TriNHM
+        /// Created Date: 17/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpGet("check-payment/{id}")]
+        public async Task<ActionResult> CheckPaymentResponse(long id)
+        {
+            PayOsClient client = new PayOsClient();
+            var (orderCode, status) = await _paymentService.GetPaymentResponse(id, client);
 
-            return Ok();
+            return Ok(new
+            {
+                orderCode,
+                status,
+            });
         }
     }
 }
+
