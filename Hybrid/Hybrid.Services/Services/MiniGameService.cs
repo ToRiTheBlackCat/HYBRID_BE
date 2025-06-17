@@ -17,6 +17,7 @@ namespace Hybrid.Services.Services
     public interface IMiniGameService
     {
         Task<List<GetMinigameTemplatesModel>> GetMinigameTemplatesAsync();
+        Task<List<GetAllMinigameModel>> GetTopMinigamesAsync(int count);
         Task<GetAllMinigameResponse> GetMinigameOfCourseAsync(string courseId, GetAllMinigameRequest request);
         Task<GetAllMinigameResponse> GetMinigameOfTeacherAsync(string teacherId, GetAllMinigameRequest request);
         Task<GetMiniGameResponse?> GetMiniGameAsync(string miniGameId);
@@ -46,6 +47,31 @@ namespace Hybrid.Services.Services
             var result = minigames
                 .OrderBy(x => int.Parse(x.TemplateId.Substring(2).Trim()))
                 .Select(x => x.ToGetMinigameTemplateModel())
+                .ToList();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Func_Get Top Minigames
+        /// Created By: TuanCA
+        /// Created Date: 16/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<List<GetAllMinigameModel>> GetTopMinigamesAsync(int count)
+        {
+            var minigames = await _unitOfWork.MiniGameRepo
+                .GetAllWithIncludeAsync(
+                    x => x.Ratings,
+                    x => x.Teacher,
+                    x => x.Template
+                );
+            var result = minigames
+                .Where(x => x.Ratings.Any())
+                .OrderByDescending(x => x.Ratings.Average(r => r.Score))
+                .Take(count)
+                .Select(x => x.ToGetAllMinigameModel())
                 .ToList();
 
             return result;

@@ -255,7 +255,7 @@ public partial class HybridDBContext : DbContext
 
         modelBuilder.Entity<StudentAccomplisment>(entity =>
         {
-            entity.HasKey(e => new { e.StudentId, e.MinigameId });
+            entity.HasKey(e => new { e.StudentId, e.MinigameId, e.TakenDate });
 
             entity.ToTable("StudentAccomplisment");
 

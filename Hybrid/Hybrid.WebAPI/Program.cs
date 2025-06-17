@@ -105,6 +105,7 @@ builder.Services.AddScoped<IMiniGameService, MiniGameService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IStudentAccomplishmentService, StudentAccomplishmentService>();
 
 
 // Register for UnitOfWork and GenericRepository

@@ -93,4 +93,16 @@ namespace Hybrid.Services.ViewModel.Minigames
         [XmlIgnore]
         public IFormFile? Image { get; set; }
     }
+
+    [XmlRoot("question")]
+    public class FlashCardQuestion : MinigameModels
+    {
+        [XmlElement("front")]
+        [Required]
+        public string Front { get; set; }
+
+        [XmlElement("back")]
+        [Required]
+        public string Back { get; set; }
+    }
 }
