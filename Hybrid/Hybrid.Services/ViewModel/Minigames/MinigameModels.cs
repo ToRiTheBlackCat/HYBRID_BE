@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Hybrid.Repositories.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -104,5 +105,29 @@ namespace Hybrid.Services.ViewModel.Minigames
         [XmlElement("back")]
         [Required]
         public string Back { get; set; }
+    }
+
+    [XmlRoot("question")]
+    public class CompletionQuestion : MinigameModels
+    {
+        [XmlElement("sentence")]
+        [Required]
+        public string Sentence { get; set; }
+
+        [XmlElement("options")]
+        [Required]
+        public List<string> Options { get; set; }
+
+        [XmlElement("answers")]
+        [Required]
+        public List<int> AnswerIndexes { get; set; }
+    }
+
+    [XmlRoot("question")]
+    public class PairingQuestion : MinigameModels
+    {
+        [XmlElement("words")]
+        [Required]
+        public List<string> Words { get; set; }
     }
 }
