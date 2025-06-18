@@ -25,8 +25,7 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public int Duration { get; set; }
 
-        [Required]
-        public string TemplateId { get; set; }
+        public string TemplateId;
 
         [Required]
         public string CourseId { get; set; }

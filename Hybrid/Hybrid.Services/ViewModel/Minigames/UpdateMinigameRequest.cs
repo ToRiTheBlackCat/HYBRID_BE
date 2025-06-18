@@ -26,8 +26,7 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public int Duration { get; set; }
 
-        [Required]
-        public string TemplateId { get; set; }
+        public string TemplateId;
 
         [Required]
         public List<T> GameData { get; set; }
