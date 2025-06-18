@@ -9,6 +9,7 @@ namespace Hybrid.Services.ViewModel.Accomplishment
     public class AccomplishmentViewModel
     {
         public string StudentId { get; set; }
+
         public string StudentName { get; set; }
 
         public string MinigameId { get; set; }
