@@ -561,9 +561,9 @@ namespace Hybrid.WebAPI.Controllers
                 case SpellingQuestion spelling:
                     templateId = "TP5";
                     break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP6";
-                //    break;
+                case FlashCardQuestion flashCard:
+                    templateId = "TP6";
+                    break;
                 //case QuizQuestion quiz:
                 //    templateId = "TP7";
                 //    break;
