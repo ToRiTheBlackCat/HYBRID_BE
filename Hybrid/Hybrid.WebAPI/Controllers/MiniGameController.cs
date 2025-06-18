@@ -205,6 +205,32 @@ namespace Hybrid.WebAPI.Controllers
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add Completion Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("completion")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddCompletion([FromForm] AddMiniGameRequest<CompletionQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
+
+        /// <summary>
+        /// API_Add Pairing Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("pairing")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddPairing([FromForm] AddMiniGameRequest<PairingQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
         #endregion
 
         /// <summary>
@@ -343,6 +369,32 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("flash-card")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateFlashCard([FromForm] UpdateMinigameRequest<FlashCardQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update Completion Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("completion")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateCompletion([FromForm] UpdateMinigameRequest<CompletionQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update Pairing Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("pairing")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdatePairing([FromForm] UpdateMinigameRequest<PairingQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
         }
@@ -564,12 +616,12 @@ namespace Hybrid.WebAPI.Controllers
                 case FlashCardQuestion flashCard:
                     templateId = "TP6";
                     break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP7";
-                //    break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP8";
-                //    break;
+                case CompletionQuestion completion:
+                    templateId = "TP7";
+                    break;
+                case PairingQuestion pairing:
+                    templateId = "TP8";
+                    break;
                 //case QuizQuestion quiz:
                 //    templateId = "TP9";
                 //    break;
