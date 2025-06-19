@@ -130,4 +130,12 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public List<string> Words { get; set; }
     }
+
+    [XmlRoot("question")]
+    public class RestorationQuestion : MinigameModels
+    {
+        [XmlElement("words")]
+        [Required]
+        public List<string> Words { get; set; }
+    }
 }
