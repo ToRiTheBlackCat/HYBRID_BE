@@ -129,14 +129,20 @@ namespace Hybrid.Services.Services
                 return new List<StudentAccomplishmentModel>();
             }
 
-            var accomplishments = await _unitOfWork.StudentAccomplishmentRepo
-                .GetAccomplishmentsOfStudentAsync(studentId);
+            IEnumerable<StudentAccomplisment> accomplishments = await _unitOfWork.StudentAccomplishmentRepo.GetAccomplishmentsOfStudentAsync(studentId);
             if (accomplishments == null || !accomplishments.Any())
             {
                 return new List<StudentAccomplishmentModel>();
             }
 
-            return accomplishments.Select(x => x.ToStudentAccomplishmentModel()).ToList();
+            accomplishments = accomplishments
+                .GroupBy(x => x.MinigameId)
+                .Select(x => x.OrderByDescending(x => x.Score).First())
+                .OrderByDescending(x => x.TakenDate);
+
+            return accomplishments
+                .Select(x => x.ToStudentAccomplishmentModel())
+                .ToList();
         }
     }
 }

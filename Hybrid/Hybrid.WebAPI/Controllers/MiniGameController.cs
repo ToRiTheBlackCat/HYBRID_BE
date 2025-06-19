@@ -231,6 +231,19 @@ namespace Hybrid.WebAPI.Controllers
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add Restoration Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("restoration")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddRestoration([FromForm] AddMiniGameRequest<RestorationQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
         #endregion
 
         /// <summary>
@@ -395,6 +408,19 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("pairing")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdatePairing([FromForm] UpdateMinigameRequest<PairingQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update Restoration Minigame
+        /// Created By: TuanCA
+        /// Created Date: 19/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("restoration")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateRestoration([FromForm] UpdateMinigameRequest<RestorationQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
         }
@@ -622,9 +648,9 @@ namespace Hybrid.WebAPI.Controllers
                 case PairingQuestion pairing:
                     templateId = "TP8";
                     break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP9";
-                //    break;
+                case RestorationQuestion restoration:
+                    templateId = "TP9";
+                    break;
                 //case QuizQuestion quiz:
                 //    templateId = "TP10";
                 //    break;
