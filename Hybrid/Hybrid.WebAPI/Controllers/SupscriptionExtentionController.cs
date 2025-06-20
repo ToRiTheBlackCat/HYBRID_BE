@@ -22,8 +22,8 @@ namespace Hybrid.WebAPI.Controllers
         /// X
         /// Created By: TriNHM
         /// Created Date: 21/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 20/6/2025
         /// </summary>
         [HttpPost("create-student")]
         public async Task<ActionResult> CreateSupscriptionExtentionOfStudent([FromBody] SupscriptionExtentionOrderRequest request)
@@ -45,8 +45,8 @@ namespace Hybrid.WebAPI.Controllers
         /// X
         /// Created By: TriNHM
         /// Created Date: 21/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 20/6/2025
         /// </summary>
         [HttpPost("create-teacher")]
         public async Task<ActionResult> CreateSupscriptionExtentionOfTeacher([FromBody] SupscriptionExtentionOrderRequest request)
