@@ -4,6 +4,7 @@ using Hybrid.Services.Helpers;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Login;
 using Hybrid.Services.ViewModel.Others;
+using Hybrid.Services.ViewModel.SupscriptionExtention;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,15 @@ namespace Hybrid.WebAPI.Controllers
     {
         private readonly JwtAuthentication _jwtAuth;
         private readonly IUserService _userService;
+        private readonly ISupscriptionExtentionService _supscriptionExtentionService;
 
         public AuthController(JwtAuthentication jwtAuth,
-                              IUserService userService)
+                              IUserService userService,
+                              ISupscriptionExtentionService supscriptionExtentionService)
         {
             _jwtAuth = jwtAuth;
             _userService = userService;
+            _supscriptionExtentionService = supscriptionExtentionService;
         }
 
 
@@ -67,6 +71,31 @@ namespace Hybrid.WebAPI.Controllers
                 return Ok(response);
             }
         }
+
+        /// <summary>
+        /// API_CheckSupscriptionOfUser
+        /// CheckSupscriptionExtentionRequest_ViewModel
+        /// (bool,string)
+        /// Created By: TriNHM
+        /// Created Date: 20/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("check-supscription")]
+        public async Task<ActionResult<(bool, string)>> CheckSupscriptionOfUser([FromBody] CheckSupscriptionExtentionRequest reuqest)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (isUpdated, message) = await _supscriptionExtentionService.CheckExpireSupscriptionExtention(reuqest.UserId, reuqest.IsTeacher);
+
+            return Ok(new
+            {
+                IsUpdated = isUpdated,
+                Message = message
+            });
+        }
+
 
         /// <summary>
         /// API_GoogleLogin 
