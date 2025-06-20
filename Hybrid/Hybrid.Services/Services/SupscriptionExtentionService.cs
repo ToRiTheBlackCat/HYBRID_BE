@@ -15,11 +15,10 @@ namespace Hybrid.Services.Services
     {
         Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrderRequest request);
         Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrderRequest request);
+        Task<(bool, string)> CheckExpireSupscriptionExtention(string userId, bool isTeacher);
     }
     public class SupscriptionExtentionService : ISupscriptionExtentionService
     {
-
-        private  SupscriptionExtentionRepository _supscriptionExtentionRepo => _unitOfWork.SupscriptionExtentionRepo;
         private readonly UnitOfWork _unitOfWork;
 
         public SupscriptionExtentionService(UnitOfWork unitOfWork)
@@ -28,13 +27,124 @@ namespace Hybrid.Services.Services
         }
 
         /// <summary>
+        /// FUNC_CheckExpireSupscriptionExtention
+        /// userId_string / isTeacher_bool
+        /// (bool, string)
+        /// Created By: TriNHM
+        /// Created Date: 20/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        public async Task<(bool, string)> CheckExpireSupscriptionExtention(string userId, bool isTeacher)
+        {
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+                if (isTeacher)
+                {
+                    var latest_teacherSupscription = await _unitOfWork.TeacherSupscriptionRepo.GetLatestSupscriptionOfTeacher(userId);
+
+                    if (latest_teacherSupscription != null && DateTime.Now > latest_teacherSupscription.EndDate)
+                    {
+                        var isUpdated = await UpdateTier(userId, true);
+                        if (!isUpdated)
+                        {
+                            return (false, "Fail to reupdate tier");
+                        }
+
+                        latest_teacherSupscription.IsActive = false;
+                        _unitOfWork.TeacherSupscriptionRepo.Update(latest_teacherSupscription); 
+
+                        await _unitOfWork.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return (false, "Not exist any supscription extension or supscription extension not expired yet");
+                    }
+                }
+                else
+                {
+                    var latest_studentSupscription = await _unitOfWork.StudentSupscriptionRepo.GetLatestSupscriptionOfStudent(userId);
+
+                    if (latest_studentSupscription != null && DateTime.Now > latest_studentSupscription.EndDate)
+                    {
+                        var isUpdated = await UpdateTier(userId, false);
+                        if (!isUpdated)
+                        {
+                            return (false, "Fail to reupdate tier");
+                        }
+
+                        latest_studentSupscription.IsActive = false;
+                        _unitOfWork.StudentSupscriptionRepo.Update(latest_studentSupscription);
+
+                        await _unitOfWork.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        return (false, "Not exist any supscription extension or supscription extension not expired yet");
+                    }
+                }
+                
+                await _unitOfWork.CommitTransactionAsync();
+                return (true, "Check expirity and reupdate tier successfully");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.Write(ex.Message);
+                return (false, "Fail to get the supscription extension and reupdate the tier");
+            }
+        }
+
+        /// <summary>
+        /// FUNC_UpdateTier
+        /// userId_string / isTeacher_bool
+        /// (bool)
+        /// Created By: TriNHM
+        /// Created Date: 20/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        private async Task<bool> UpdateTier(string userId, bool isTeacher)
+        {
+            bool isSuccess = true;
+            try
+            {
+                if (isTeacher)
+                {
+                    var foundTeacher = await _unitOfWork.TeacherRepo.GetByIdAsync(userId);
+                    if (foundTeacher != null)
+                    {
+                        foundTeacher.TierId = "1";
+                        _unitOfWork.TeacherRepo.Update(foundTeacher);
+                    }
+                }
+                else
+                {
+                    var foundStudent = await _unitOfWork.StudentRepo.GetByIdAsync(userId);
+                    if (foundStudent != null)
+                    {
+                        foundStudent.TierId = "1";
+                        _unitOfWork.StudentRepo.Update(foundStudent);
+                    }
+                }
+                await _unitOfWork.SaveChangesAsync();
+                return isSuccess;
+            }
+            catch (Exception ex)
+            {
+                return !isSuccess;
+            }
+        }
+
+        /// <summary>
         /// FUNC_CreateSupscriptionExtentionOrder_Student
         /// SupscriptionExtentionOrder
         /// (bool, string)
         /// Created By: TriNHM
         /// Created Date: 22/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 20/6/2025
         /// </summary>
         public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Student(SupscriptionExtentionOrderRequest request)
         {
@@ -65,8 +175,8 @@ namespace Hybrid.Services.Services
         /// (bool, string)
         /// Created By: TriNHM
         /// Created Date: 22/5/2025
-        /// Updated By: X
-        /// Updated Date: X
+        /// Updated By: TriNHM
+        /// Updated Date: 20/6/2025
         /// </summary>
         public async Task<(bool, string)> CreateSupscriptionExtentionOrder_Teacher(SupscriptionExtentionOrderRequest request)
         {
