@@ -11,12 +11,15 @@ public partial class TeacherSupscription
 
     public string TierId { get; set; }
 
+    public string TransactionId { get; set; }
+
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
 
     public bool IsActive { get; set; }
-    public virtual ICollection<SupscriptionExtentionOrder> SupscriptionExtentionOrders { get; set; } = new List<SupscriptionExtentionOrder>();
+
+    public virtual SupscriptionExtentionOrder SupscriptionExtentionOrder { get; set; }
 
     public virtual Teacher Teacher { get; set; }
 
