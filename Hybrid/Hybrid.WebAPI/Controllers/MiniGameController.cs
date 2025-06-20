@@ -244,6 +244,43 @@ namespace Hybrid.WebAPI.Controllers
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add WordFind Minigame
+        /// Created By: TuanCA
+        /// Created Date: 20/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("word-find")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddWordFind([FromForm] AddMiniGameRequest<WordFindQuestion> request)
+        {
+            try
+            {
+                foreach (var item in request.GameData) item.GenerateWordSearch();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(request.GameData), ex.Message);
+                return BadRequest(ModelState);
+            }
+
+            //return Ok("Run success.");
+            return await AddMiniGame(request);
+        }
+
+        /// <summary>
+        /// API_Add TrueFalse Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("true-false")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddTrueFalse([FromForm] AddMiniGameRequest<TrueFalseQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
         #endregion
 
         /// <summary>
@@ -421,6 +458,42 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("restoration")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateRestoration([FromForm] UpdateMinigameRequest<RestorationQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update WordFind Minigame
+        /// Created By: TuanCA
+        /// Created Date: 20/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("word-find")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateWordFind([FromForm] UpdateMinigameRequest<WordFindQuestion> request, string fakeTeacherId = "")
+        {
+            try
+            {
+                foreach (var item in request.GameData) item.GenerateWordSearch();
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(request.GameData), ex.Message);
+                return BadRequest(ModelState);
+            }
+
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update TrueFalse Minigame
+        /// Created By: TuanCA
+        /// Created Date: 19/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("true-false")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateTrueFalse([FromForm] UpdateMinigameRequest<TrueFalseQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
         }
@@ -651,12 +724,12 @@ namespace Hybrid.WebAPI.Controllers
                 case RestorationQuestion restoration:
                     templateId = "TP9";
                     break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP10";
-                //    break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP11";
-                //    break;
+                case WordFindQuestion wordFind:
+                    templateId = "TP10";
+                    break;
+                case TrueFalseQuestion trueFalse:
+                    templateId = "TP11";
+                    break;
                 //case QuizQuestion quiz:
                 //    templateId = "TP12";
                 //    break;
