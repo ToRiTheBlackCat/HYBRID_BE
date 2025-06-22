@@ -11,6 +11,8 @@ public partial class StudentSupscription
 
     public string TierId { get; set; }
 
+    public string TransactionId { get; set; }
+
     public DateTime StartDate { get; set; }
 
     public DateTime EndDate { get; set; }
@@ -18,6 +20,8 @@ public partial class StudentSupscription
     public bool IsActive { get; set; }
 
     public virtual Student Student { get; set; }
-    public virtual ICollection<SupscriptionExtentionOrder> SupscriptionExtentionOrders { get; set; } = new List<SupscriptionExtentionOrder>();
+
+    public virtual SupscriptionExtentionOrder SupscriptionExtentionOrder { get; set; }
+
     public virtual StudentTier Tier { get; set; }
 }

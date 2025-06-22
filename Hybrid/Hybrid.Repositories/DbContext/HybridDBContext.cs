@@ -255,7 +255,7 @@ public partial class HybridDBContext : DbContext
 
         modelBuilder.Entity<StudentAccomplisment>(entity =>
         {
-            entity.HasKey(e => new { e.StudentId, e.MinigameId, e.TakenDate });
+            entity.HasKey(e => new { e.StudentId, e.MinigameId });
 
             entity.ToTable("StudentAccomplisment");
 
@@ -282,7 +282,7 @@ public partial class HybridDBContext : DbContext
 
         modelBuilder.Entity<StudentSupscription>(entity =>
         {
-            entity.HasKey(e => new { e.StudentId, e.TierId });
+            entity.HasKey(e => new { e.StudentId, e.TierId, e.TransactionId });
 
             entity.ToTable("StudentSupscription");
 
@@ -292,6 +292,10 @@ public partial class HybridDBContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.TierId)
                 .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.TransactionId)
+                .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -306,6 +310,11 @@ public partial class HybridDBContext : DbContext
                 .HasForeignKey(d => d.TierId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_StudentSupscription_StudentTier");
+
+            entity.HasOne(d => d.SupscriptionExtentionOrder).WithOne(p => p.StudentSupscription)
+                .HasForeignKey<StudentSupscription>(d => new { d.StudentId, d.TierId, d.TransactionId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_StudentSupscription_SupscriptionExtentionOrder");
         });
 
         modelBuilder.Entity<StudentTier>(entity =>
@@ -327,7 +336,7 @@ public partial class HybridDBContext : DbContext
 
         modelBuilder.Entity<SupscriptionExtentionOrder>(entity =>
         {
-            entity.HasKey(e => new { e.UserId, e.TierId, e.TransactionId }).HasName("PK_SupscriptionExtentionOrder_1");
+            entity.HasKey(e => new { e.UserId, e.TierId, e.TransactionId });
 
             entity.ToTable("SupscriptionExtentionOrder");
 
@@ -348,16 +357,6 @@ public partial class HybridDBContext : DbContext
                 .HasForeignKey(d => d.TransactionId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_SupscriptionExtentionOrder_TransactionHistory");
-
-            entity.HasOne(d => d.StudentSupscription).WithMany(p => p.SupscriptionExtentionOrders)
-                .HasForeignKey(d => new { d.UserId, d.TierId })
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SupscriptionExtentionOrder_StudentSupscription");
-
-            entity.HasOne(d => d.TeacherSupscription).WithMany(p => p.SupscriptionExtentionOrders)
-                .HasForeignKey(d => new { d.UserId, d.TierId })
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_SupscriptionExtentionOrder_TeacherSupscription");
         });
 
         modelBuilder.Entity<Teacher>(entity =>
@@ -398,7 +397,7 @@ public partial class HybridDBContext : DbContext
 
         modelBuilder.Entity<TeacherSupscription>(entity =>
         {
-            entity.HasKey(e => new { e.TeacherId, e.TierId });
+            entity.HasKey(e => new { e.TeacherId, e.TierId, e.TransactionId });
 
             entity.ToTable("TeacherSupscription");
 
@@ -408,6 +407,10 @@ public partial class HybridDBContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.TierId)
                 .HasMaxLength(1)
+                .IsUnicode(false)
+                .IsFixedLength();
+            entity.Property(e => e.TransactionId)
+                .HasMaxLength(10)
                 .IsUnicode(false)
                 .IsFixedLength();
             entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -422,6 +425,11 @@ public partial class HybridDBContext : DbContext
                 .HasForeignKey(d => d.TierId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_TeacherSupscription_TeacherTier");
+
+            entity.HasOne(d => d.SupscriptionExtentionOrder).WithOne(p => p.TeacherSupscription)
+                .HasForeignKey<TeacherSupscription>(d => new { d.TeacherId, d.TierId, d.TransactionId })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_TeacherSupscription_SupscriptionExtentionOrder");
         });
 
         modelBuilder.Entity<TeacherTier>(entity =>

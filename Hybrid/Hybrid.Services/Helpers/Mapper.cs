@@ -63,6 +63,7 @@ namespace Hybrid.Services.Helpers
             {
                 StudentId = supscriptionExtentionOrder.UserId,
                 TierId = supscriptionExtentionOrder.TierId,
+                TransactionId = supscriptionExtentionOrder.TransactionId,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(supscriptionExtentionOrder.Days),
                 IsActive = true
@@ -75,6 +76,7 @@ namespace Hybrid.Services.Helpers
             {
                 TeacherId = supscriptionExtentionOrder.UserId,
                 TierId = supscriptionExtentionOrder.TierId,
+                TransactionId = supscriptionExtentionOrder.TransactionId,
                 StartDate = DateTime.Now,
                 EndDate = DateTime.Now.AddDays(supscriptionExtentionOrder.Days),
                 IsActive = true
@@ -108,6 +110,7 @@ namespace Hybrid.Services.Helpers
                 UserId = supscriptionExtentionOrderRequest.UserId.Trim(),
                 TierId = supscriptionExtentionOrderRequest.TierId.Trim(),
                 TransactionId = supscriptionExtentionOrderRequest.TransactionId.Trim(),
+                Days = supscriptionExtentionOrderRequest.Days
             };
         }
 

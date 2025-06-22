@@ -6,7 +6,7 @@
    "IncludeConnectionString": true,
    "ModelNamespace": null,
    "OutputContextPath": null,
-   "OutputPath": "Models99",
+   "OutputPath": "Models999",
    "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "Hybrid.Repositories",
    "Schemas": null,
