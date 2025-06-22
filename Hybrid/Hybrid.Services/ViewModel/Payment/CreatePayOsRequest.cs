@@ -12,8 +12,8 @@ namespace Hybrid.Services.ViewModel.Payment
         public int Amount { get; set; }
         public string? Description { get; set; }
         public string? BuyerName { get; set; }
-        public string CancelUrl { get; set; } = "https://hybrid-e-learn.netlify.app/";
-        public string ReturnUrl { get; set; } = "https://hybrid-e-learn.netlify.app/";
+        public string CancelUrl { get; set; } = "https://hybrid-e-learn.netlify.app/processing-payment";
+        public string ReturnUrl { get; set; } = "https://hybrid-e-learn.netlify.app/processing-payment";
         public long? ExpiredAt { get; set; }
     }
 }
