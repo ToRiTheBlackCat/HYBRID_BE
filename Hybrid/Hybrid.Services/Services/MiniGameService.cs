@@ -65,13 +65,16 @@ namespace Hybrid.Services.Services
                 .GetAllWithIncludeAsync(
                     x => x.Ratings,
                     x => x.Teacher,
-                    x => x.Template
+                    x => x.Template,
+                    x => x.StudentAccomplisments
                 );
             var result = minigames
                 .Where(x => x.Ratings.Any())
-                .OrderByDescending(x => x.Ratings.Average(r => r.Score))
-                .Take(count)
+                //.OrderByDescending(x => x.Ratings.Average(r => r.Score))
+                //.ThenByDescending(x => x.StudentAccomplisments.Count)
                 .Select(x => x.ToGetAllMinigameModel())
+                .OrderByDescending(x => (x.RatingScore ?? 0) * Math.Log(1 + x.ParticipantsCount))
+                .Take(count)
                 .ToList();
 
             return result;
