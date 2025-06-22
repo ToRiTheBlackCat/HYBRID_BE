@@ -49,7 +49,7 @@ namespace Hybrid.Services.ViewModel.Minigames
 
         public int Duration { get; set; }
 
-        public int? ParticipantsCount { get; set; }
+        public int ParticipantsCount { get; set; }
 
         public double? RatingScore { get; set; }
 
