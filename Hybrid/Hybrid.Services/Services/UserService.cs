@@ -21,7 +21,8 @@ namespace Hybrid.Services.Services
     public interface IUserService
     {
         Task<User?> Authenticate(LoginRequest loginRequest);
-        Task<User?> AuthenticateGoogle(string token);
+        //Task<User?> AuthenticateGoogle(string token, string roleId);
+        Task<User?> AuthenticateGoogle(SignupUserGoogleRequest request);
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task<User?> GetUserByEmailAsync(string email);
         Task<int> UpdateUserAccount(User user);
@@ -69,12 +70,13 @@ namespace Hybrid.Services.Services
         /// Updated By: X
         /// Updated Date: X
         /// </summary>
-        public async Task<User?> AuthenticateGoogle(string token)
+        //public async Task<User?> AuthenticateGoogle(string token, string roleId)
+        public async Task<User?> AuthenticateGoogle(SignupUserGoogleRequest request)
         {
             GoogleJsonWebSignature.Payload payload;
             try
             {
-                payload = await GoogleJsonWebSignature.ValidateAsync(token, new GoogleJsonWebSignature.ValidationSettings
+                payload = await GoogleJsonWebSignature.ValidateAsync(request.Token, new GoogleJsonWebSignature.ValidationSettings
                 {
                     Audience = new[] { HybridVariables.ClientId }
                 });
@@ -98,7 +100,7 @@ namespace Hybrid.Services.Services
                 Password = Sha256Encoding.ComputeSHA256Hash(payload.Email + HybridVariables.SecretString + payload.EmailVerified),
                 CreatedDate = DateTime.UtcNow,
                 IsActive = true,
-                RoleId = "1",
+                RoleId = request.RoleId,
             };
             try
             {

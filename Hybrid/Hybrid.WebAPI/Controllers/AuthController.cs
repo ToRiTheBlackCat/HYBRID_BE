@@ -4,6 +4,7 @@ using Hybrid.Services.Helpers;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Login;
 using Hybrid.Services.ViewModel.Others;
+using Hybrid.Services.ViewModel.SignUp;
 using Hybrid.Services.ViewModel.SupscriptionExtention;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -105,12 +106,12 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("login-google")]
-        public async Task<ActionResult<LoginResponse?>> LoginGoogle([FromBody] string token)
+        public async Task<ActionResult<LoginResponse?>> LoginGoogle([FromBody] SignupUserGoogleRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = await _userService.AuthenticateGoogle(token);
+            var user = await _userService.AuthenticateGoogle(request);
             if (user == null)
             {
                 return NotFound("User not found. Try again!");
