@@ -2,6 +2,7 @@
 using Hybrid.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,6 +57,19 @@ namespace Hybrid.Repositories.Repos
                 .ToList().Max() + 1;
 
             return "CO" + newNumber;
+        }
+
+        public async Task<(int,int,int)> GetALlCourseByLevelAsync()
+        {
+            List<string> listLevelId = new List<string>()
+            {
+                "1","2","3"
+            };
+            var startersCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[0]);
+            var moversCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[1]);
+            var flyersCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[2]);
+
+            return (startersCourseCount,moversCourseCount,flyersCourseCount);
         }
     }
 }
