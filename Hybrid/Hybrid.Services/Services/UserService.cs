@@ -5,10 +5,12 @@ using Hybrid.Repositories.Models;
 using Hybrid.Repositories.Repos;
 using Hybrid.Services.Constant;
 using Hybrid.Services.Helpers;
+using Hybrid.Services.ViewModel.Course;
 using Hybrid.Services.ViewModel.Login;
 using Hybrid.Services.ViewModel.Others;
 using Hybrid.Services.ViewModel.Profile;
 using Hybrid.Services.ViewModel.SignUp;
+using Hybrid.Services.ViewModel.User;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -29,12 +31,13 @@ namespace Hybrid.Services.Services
         Task<(bool, string, string)> SignUpUserAccount(SignUpUserRequest request);
         Task<(bool, string)> SignUpTeacherAccount(SignUpTeacher_StudentRequest request);
         Task<(bool, string)> SignUpStudentAccount(SignUpTeacher_StudentRequest request);
-
         Task<User?> GetUserByIdAsync(string userId);
         Task<(bool, string)> RequestResetPasswordAsync(string email);
         Task<(bool, string)> ConfirmResetPasswordAsync(ConfirmResestRequest resestRequest);
         Task<GetProfileResponse?> GetProfileAsync(GetProfileRequest request);
         Task<UpdateProfileResponse> UpdateProfileAsync(UpdateProfileRequest request);
+        Task<AnalyzeUserResponse> AnalyzeUser();
+        Task<List<FilterUsersResponse>> FilterUsersByCreatedDate(DateTime? fromDate, DateTime? toDate);
     }
 
     public class UserService : IUserService
@@ -464,6 +467,49 @@ namespace Hybrid.Services.Services
 
             return result;
         }
+
+        public async Task<AnalyzeUserResponse> AnalyzeUser()
+        {
+            try
+            {
+                var (numberOfStudent, numberOfTeacher) = await _unitOfWork.UserRepo.GetUsersCountByRoleAsync();
+                var (studentList, teacherList) = await _unitOfWork.UserRepo.GetUsersListByRoleAsync();
+                return new AnalyzeUserResponse
+                {
+                    NumberOfStudents = numberOfStudent,
+                    StudentsList = studentList,
+                    NumbersOfTeacher = numberOfTeacher,
+                    TeachersList = teacherList
+                };
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine(ex.Message);
+                return new AnalyzeUserResponse();
+            }
+        }
+
+        public async Task<List<FilterUsersResponse>> FilterUsersByCreatedDate(DateTime? fromDate, DateTime? toDate)
+        {
+            var list = (await _unitOfWork.UserRepo.GetAllAsync()).AsQueryable();
+
+            if (fromDate != null && toDate == null)
+            {
+                list = list.Where(x => x.CreatedDate >= fromDate);
+            }
+            else if (fromDate == null && toDate != null)
+            {
+                list = list.Where(x => x.CreatedDate <= toDate);
+            }
+            else if (fromDate != null && toDate != null)
+            {
+                list = list.Where(x => x.CreatedDate >= fromDate && x.CreatedDate <= toDate);
+            }
+            var mappedList = (list.ToList()).Map_ListUser_To_ListFilterUsersResponse();
+
+            return mappedList;
+        }
+
 
 
     }

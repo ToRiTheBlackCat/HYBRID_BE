@@ -78,5 +78,21 @@ namespace Hybrid.Repositories.Repos
 
             return "HU" + newNumber;
         }
+
+        public async Task<(int, int)> GetUsersCountByRoleAsync()
+        {
+            var numberOfStudents = await _context.Users.CountAsync(c => c.RoleId == "2");
+            var numberOfTeachers = await _context.Users.CountAsync(c => c.RoleId == "3");
+
+            return (numberOfStudents, numberOfTeachers);
+        }
+
+        public async Task<(List<Student>, List<Teacher>)> GetUsersListByRoleAsync()
+        {
+            var studentList = await _context.Students.ToListAsync();
+            var teacherList = await _context.Teachers.ToListAsync();
+
+            return (studentList, teacherList);
+        }
     }
 }
