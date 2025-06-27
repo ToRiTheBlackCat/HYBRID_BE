@@ -20,6 +20,11 @@ namespace Hybrid.Services.ViewModel.Minigames
 
     public class MinigameModels
     {
+        public virtual string IsValidInput()
+        {
+            return "";
+        }
+        public virtual void GenerateGame() { }
     }
 
     [XmlRoot("questions")]
@@ -166,7 +171,7 @@ namespace Hybrid.Services.ViewModel.Minigames
         [XmlIgnore]
         private static readonly Random _rand = new();
 
-        public void GenerateWordSearch()
+        public override void GenerateGame()
         {
             var ordered = Words.OrderBy(x => !string.IsNullOrEmpty(x) ? x.Length : 0);
             var longestWord = ordered.Last();
@@ -286,5 +291,223 @@ namespace Hybrid.Services.ViewModel.Minigames
         [XmlElement("answer")]
         [Required]
         public bool Answer { get; set; }
+    }
+
+    [XmlRoot("question")]
+    public class CrossWordsQuestion : MinigameModels
+    {
+        [XmlElement("words")]
+        [Required]
+        public List<string> Words { get; set; }
+
+        [XmlElement("clues")]
+        [Required]
+        public List<string> Clues { get; set; }
+
+        [XmlElement("dimension")]
+        [Required]
+        [Range(8, int.MaxValue)]
+        public int DimensionSize { get; set; } = 8;
+
+        [XmlElement("array")]
+        public string Array = "";
+
+        [XmlElement("positions")]
+        public List<string> StartPosition = new List<string>();
+
+        #region Generation logic
+        private char[,] grid;
+        private List<string> placedWords = new();
+        private Random _random = new();
+        private const int minWordLength = 2;
+
+        public override string IsValidInput()
+        {
+            if (Words == null || Words.Count == 0)
+            {
+                return $"{nameof(this.Words)} can't be empty.";
+            }
+
+            if (Words.Count != Clues.Count)
+            {
+                return $"Number of Words({Words.Count}) doesn't match number of Clues({Clues.Count})";
+            }
+
+            var orderedLength = Words.OrderBy(x => x.Length);
+            if (orderedLength.First().Length <= minWordLength)
+            {
+                return $"{nameof(this.Words)} can't have words with length shorter than {minWordLength}.";
+            }
+            else if (orderedLength.Last().Length > DimensionSize)
+            {
+                return $"{nameof(this.Words)} can't have words with length longer than {DimensionSize}.";
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Generate the CrossWords game
+        /// </summary>
+        public override void GenerateGame()
+        {
+            if (Words == null || Words.Count == 0) return;
+
+            grid = new char[DimensionSize, DimensionSize];
+            // Initialize grid with empty space
+            for (int i = 0; i < DimensionSize; i++)
+                for (int j = 0; j < DimensionSize; j++)
+                    grid[i, j] = '.';
+
+            Words = Words.OrderByDescending(w => w.Length).ToList(); // Place longest words first
+
+            // Place the first word horizontally in the middle
+            if (CanPlaceWord(Words[0].ToUpper(), DimensionSize / 2, (DimensionSize - Words[0].Length) / 2, true))
+            {
+                PlaceWord(Words[0].ToUpper(), DimensionSize / 2, (DimensionSize - Words[0].Length) / 2, true);
+            }
+            else
+            {
+                PlaceWord(Words[0].ToUpper(), DimensionSize / 2, 0, true);
+            }
+
+            placedWords.Add(Words[0].ToUpper());
+
+            for (int w = 1; w < Words.Count; w++)
+            {
+                var word = Words[w].ToUpper();
+                if (!TryPlaceWord(word))
+                    Console.WriteLine($"Could not place word: {word}");
+                else
+                {
+                    //Console.WriteLine($"Place word: {word}");
+                    //PrintGrid();
+                }
+            }
+
+            this.Array = PrintGrid();
+        }
+
+        /// <summary>
+        /// Method for placing the word on the grid
+        /// </summary>
+        /// <param name="word">The word to be placed</param>
+        /// <returns></returns>
+        private bool TryPlaceWord(string word)
+        {
+            var shuffledPlacedWords = placedWords.OrderBy(_ => _random.Next()).ToList();
+            foreach (var placed in shuffledPlacedWords)
+            {
+                // Get pairs of mathing character indexes for placedWord and newWord (placedWordIndex, newWordIndex)
+                var matches = Enumerable.Range(0, placed.Length)
+                    .SelectMany(i => Enumerable.Range(0, word.Length)
+                    .Where(j => placed[i] == word[j])
+                    .Select(j => (i, j)))
+                    .OrderBy(_ => _random.Next());
+
+                foreach (var (placedIndex, wordIndex) in matches)
+                {
+                    for (int r = 0; r < DimensionSize; r++)
+                    {
+                        for (int c = 0; c < DimensionSize; c++)
+                        {
+                            if (grid[r, c] != placed[placedIndex])
+                                continue;
+
+                            // Randomize orientation choice
+                            foreach (var isHorizontal in new[] { true, false }.OrderBy(_ => _random.Next()))
+                            {
+                                int startRow = isHorizontal ? r : r - wordIndex;
+                                int startCol = isHorizontal ? c - wordIndex : c;
+
+                                if (CanPlaceWord(word, startRow, startCol, isHorizontal))
+                                {
+                                    //Console.WriteLine($"StartRow {startRow}");
+                                    //Console.WriteLine($"StartColumn {startCol}");
+                                    //Console.WriteLine($"Matched {placed[placedIndex]}: ({placedIndex}, {wordIndex})");
+                                    //Console.WriteLine($"Placed {placed}");
+                                    //Console.WriteLine($"Word {word}");
+                                    //Console.WriteLine($"Matching index: ({r}, {c})");
+
+
+                                    PlaceWord(word, startRow, startCol, isHorizontal);
+                                    placedWords.Add(word);
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+
+        }
+
+        /// <summary>
+        /// Checks if the word can actually be placed on the grid
+        /// </summary>
+        /// <param name="word">The word to place</param>
+        /// <param name="row">Vertical index of the grid</param>
+        /// <param name="col">Horizontal index of the grid</param>
+        /// <param name="isHorizontal">Whether to place the word horizontally or vertically</param>
+        private bool CanPlaceWord(string word, int row, int col, bool isHorizontal)
+        {
+            for (int i = 0; i < word.Length; i++)
+            {
+                int r = isHorizontal ? row : row + i;
+                int c = isHorizontal ? col + i : col;
+
+                if (r < 0 || r >= DimensionSize || c < 0 || c >= DimensionSize)
+                    return false;
+
+                if (grid[r, c] != '.' && grid[r, c] != word[i])
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Place word into the grid as characters
+        /// </summary>
+        /// <param name="word">The word to place</param>
+        /// <param name="row">Vertical index of the grid</param>
+        /// <param name="col">Horizontal index of the grid</param>
+        /// <param name="isHorizontal">Whether to place the word horizontally or vertically</param>
+        private void PlaceWord(string word, int row, int col, bool isHorizontal)
+        {
+
+            StartPosition.Add($"{row},{col}");
+            for (int i = 0; i < word.Length; i++)
+            {
+                int r = isHorizontal ? row : row + i;
+                int c = isHorizontal ? col + i : col;
+                grid[r, c] = word[i];
+            }
+        }
+
+        /// <summary>
+        /// Print array to viewable Grid in Console
+        /// </summary>
+        public string PrintGrid()
+        {
+            var chars = new char[DimensionSize * DimensionSize];
+            var index = 0;
+            for (int i = 0; i < DimensionSize; i++)
+            {
+                for (int j = 0; j < DimensionSize; j++)
+                {
+                    Console.Write(grid[i, j] + " ");
+                    chars[index++] = grid[i, j];
+                }
+                Console.WriteLine();
+            }
+
+            Console.WriteLine($"Words: {this.Words.ToString()}");
+            Console.WriteLine($"Start Positions: {this.StartPosition.ToString()}");
+
+            return new string(chars);
+        }
+        #endregion
     }
 }
