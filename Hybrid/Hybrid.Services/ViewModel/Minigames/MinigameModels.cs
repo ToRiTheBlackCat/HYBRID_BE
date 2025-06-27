@@ -360,6 +360,8 @@ namespace Hybrid.Services.ViewModel.Minigames
                     grid[i, j] = '.';
 
             Words = Words.OrderByDescending(w => w.Length).ToList(); // Place longest words first
+            var unplacedWords = Words.Select(x => x).ToList();
+            unplacedWords.Remove(unplacedWords[0]);
 
             // Place the first word horizontally in the middle
             if (CanPlaceWord(Words[0].ToUpper(), DimensionSize / 2, (DimensionSize - Words[0].Length) / 2, true))
@@ -370,19 +372,29 @@ namespace Hybrid.Services.ViewModel.Minigames
             {
                 PlaceWord(Words[0].ToUpper(), DimensionSize / 2, 0, true);
             }
+            PrintGrid();
 
             placedWords.Add(Words[0].ToUpper());
 
-            for (int w = 1; w < Words.Count; w++)
+            var attempts = 0;
+
+
+            while (unplacedWords.Any() && attempts <= 10)
             {
-                var word = Words[w].ToUpper();
-                if (!TryPlaceWord(word))
-                    Console.WriteLine($"Could not place word: {word}");
-                else
+                for (int w = 0; w < unplacedWords.Count; w++)
                 {
-                    //Console.WriteLine($"Place word: {word}");
-                    //PrintGrid();
+                    var word = unplacedWords[w].ToUpper();
+                    if (!TryPlaceWord(word))
+                        Console.WriteLine($"Could not place word: {word}");
+                    else
+                    {
+                        Console.WriteLine($"Place word: {word}");
+                        unplacedWords.Remove(word);
+                        PrintGrid();
+                    }
                 }
+
+                attempts++;
             }
 
             this.Array = PrintGrid();
