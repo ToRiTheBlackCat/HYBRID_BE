@@ -255,17 +255,6 @@ namespace Hybrid.WebAPI.Controllers
         [HttpPost("word-find")]
         public async Task<ActionResult<AddMiniGameResponse>> AddWordFind([FromForm] AddMiniGameRequest<WordFindQuestion> request)
         {
-            try
-            {
-                foreach (var item in request.GameData) item.GenerateWordSearch();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(nameof(request.GameData), ex.Message);
-                return BadRequest(ModelState);
-            }
-
-            //return Ok("Run success.");
             return await AddMiniGame(request);
         }
 
@@ -278,6 +267,19 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("true-false")]
         public async Task<ActionResult<AddMiniGameResponse>> AddTrueFalse([FromForm] AddMiniGameRequest<TrueFalseQuestion> request)
+        {
+            return await AddMiniGame(request);
+        }
+
+        /// <summary>
+        /// API_Add CrossWords Minigame
+        /// Created By: TuanCA
+        /// Created Date: 18/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("cross-words")]
+        public async Task<ActionResult<AddMiniGameResponse>> AddCrossWords([FromForm] AddMiniGameRequest<CrossWordsQuestion> request)
         {
             return await AddMiniGame(request);
         }
@@ -318,6 +320,29 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Validate inner inputs of each minigame questions
+            foreach (var index in request.GameData)
+            {
+                var errorString = index.IsValidInput();
+                if (!string.IsNullOrEmpty(errorString))
+                {
+                    ModelState.AddModelError(nameof(request.GameData), errorString);
+                    return BadRequest(ModelState);
+                }
+            }
+
+            // Generate game data for complicated minigames
+            try
+            {
+                request.GameData.ForEach(x => x.GenerateGame());
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(request.GameData), ex.Message);
+                return BadRequest(ModelState);
+            }
+
+            // Auto set the template id for the equivalent minigame request model
             request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
 
             var result = await _miniGameService.AddMiniGameAsync(request, Path.GetExtension(request.ImageFile.FileName));
@@ -472,16 +497,6 @@ namespace Hybrid.WebAPI.Controllers
         [HttpPut("word-find")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateWordFind([FromForm] UpdateMinigameRequest<WordFindQuestion> request, string fakeTeacherId = "")
         {
-            try
-            {
-                foreach (var item in request.GameData) item.GenerateWordSearch();
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(nameof(request.GameData), ex.Message);
-                return BadRequest(ModelState);
-            }
-
             return await UpdateMiniGame(request, fakeTeacherId);
         }
 
@@ -494,6 +509,19 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("true-false")]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateTrueFalse([FromForm] UpdateMinigameRequest<TrueFalseQuestion> request, string fakeTeacherId = "")
+        {
+            return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update CrossWords Minigame
+        /// Created By: TuanCA
+        /// Created Date: 27/06/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("cross-words")]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateCrossWords([FromForm] UpdateMinigameRequest<CrossWordsQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
         }
@@ -547,6 +575,29 @@ namespace Hybrid.WebAPI.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Validate inner inputs of each minigame questions
+            foreach (var index in request.GameData)
+            {
+                var errorString = index.IsValidInput();
+                if (!string.IsNullOrEmpty(errorString))
+                {
+                    ModelState.AddModelError(nameof(request.GameData), errorString);
+                    return BadRequest(ModelState);
+                }
+            }
+
+            // Generate game data for complicated minigames
+            try
+            {
+                request.GameData.ForEach(x => x.GenerateGame());
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(nameof(request.GameData), ex.Message);
+                return BadRequest(ModelState);
+            }
+
+            // Auto set the template id for the equivalent minigame request model
             request.TemplateId = GetValidMinigameTemplateId(request.GameData[0]);
 
             var result = await _miniGameService.UpdateMiniGameAsync(request, Path.GetExtension(request.ImageFile.FileName));
@@ -730,9 +781,9 @@ namespace Hybrid.WebAPI.Controllers
                 case TrueFalseQuestion trueFalse:
                     templateId = "TP11";
                     break;
-                //case QuizQuestion quiz:
-                //    templateId = "TP12";
-                //    break;
+                case CrossWordsQuestion crossWords:
+                    templateId = "TP12";
+                    break;
                 default:
                     throw new ArgumentException("Invalid minigame type", nameof(minigame));
             }
