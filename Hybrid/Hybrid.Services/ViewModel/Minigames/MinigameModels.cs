@@ -397,6 +397,7 @@ namespace Hybrid.Services.ViewModel.Minigames
                 attempts++;
             }
 
+            this.Words = placedWords;
             this.Array = PrintGrid();
         }
 
