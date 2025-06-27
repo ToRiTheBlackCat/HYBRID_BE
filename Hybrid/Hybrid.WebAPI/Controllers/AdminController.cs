@@ -24,6 +24,16 @@ namespace Hybrid.WebAPI.Controllers
             _userService = userService;
             _miniGameService = miniGameService;
         }
+
+        /// <summary>
+        /// API_GetAnalyzeCourse
+        /// X
+        /// AnalyzeCourseResponse_ViewModel
+        /// Created By: TriNHM
+        /// Created Date: 26/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpGet("analyze-courses")]
         public async Task<ActionResult<AnalyzeCourseResponse>> GetAnalyzeCourse()
         {
@@ -31,6 +41,15 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// API_GetAnalyzeUser
+        /// X
+        /// AnalyzeUserResponse_ViewModel
+        /// Created By: TriNHM
+        /// Created Date: 26/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpGet("analyze-users")]
         public async Task<ActionResult<AnalyzeUserResponse>> GetAnalyzeUser()
         {
@@ -38,12 +57,31 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// API_GetAnalyzeMinigames
+        /// X
+        /// Dictionary<string,int>
+        /// Created By: TriNHM
+        /// Created Date: 27/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpGet("analyze-minigames")]
-        public async Task<ActionResult<AnalyzeUserResponse>> GetAnalyzeMinigames()
+        public async Task<ActionResult> GetAnalyzeMinigames()
         {
             var result = await _miniGameService.AnalyzeMinigames();
             return Ok(result);
         }
+
+        /// <summary>
+        /// API_FilterUserByDate
+        /// fromDate_DateTime / toDate_DateTime
+        /// FilterUsersResponse_ViewModel
+        /// Created By: TriNHM
+        /// Created Date: 26/6/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
         [HttpPost("filter-user")]
         public async Task<ActionResult<List<FilterUsersResponse>>> FilterUserByDate(DateTime? fromDate, DateTime? toDate)
         {

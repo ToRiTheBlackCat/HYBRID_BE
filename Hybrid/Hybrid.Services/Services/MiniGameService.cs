@@ -24,6 +24,7 @@ namespace Hybrid.Services.Services
         Task<AddMiniGameResponse> AddMiniGameAsync<T>(AddMiniGameRequest<T> request, string fileExtention) where T : MinigameModels;
         Task<UpdateMinigameResponse> UpdateMiniGameAsync<T>(UpdateMinigameRequest<T> request, string fileExtention) where T : MinigameModels;
         Task<DeleteMinigameResponse> DeleteMiniGameAsync(string minigameId);
+        Task<Dictionary<string, int>> AnalyzeMinigames();
     }
 
     public class MiniGameService : IMiniGameService
@@ -397,6 +398,12 @@ namespace Hybrid.Services.Services
                 result.Message = "Delete minigame failed";
             }
 
+            return result;
+        }
+        //AnalyzeMinigamesResponse
+        public async Task<Dictionary<string, int>> AnalyzeMinigames()
+        {
+            var result = await _unitOfWork.MiniGameRepo.GetMinigamesCountByTemplateNameAsync();
             return result;
         }
     }

@@ -59,17 +59,20 @@ namespace Hybrid.Repositories.Repos
             return "CO" + newNumber;
         }
 
-        public async Task<(int,int,int)> GetALlCourseByLevelAsync()
+        public async Task<(int Starters, int Movers, int Flyers)> GetAllCourseByLevelAsync()
         {
-            List<string> listLevelId = new List<string>()
-            {
-                "1","2","3"
-            };
-            var startersCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[0]);
-            var moversCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[1]);
-            var flyersCourseCount = await _context.Courses.CountAsync(c => c.LevelId == listLevelId[2]);
+            var levelCounts = await _context.Courses
+                .Where(c => c.LevelId == "1" || c.LevelId == "2" || c.LevelId == "3")
+                .GroupBy(c => c.LevelId)
+                .Select(g => new { LevelId = g.Key, Count = g.Count() })
+                .ToListAsync();
 
-            return (startersCourseCount,moversCourseCount,flyersCourseCount);
+            int starters = levelCounts.FirstOrDefault(g => g.LevelId == "1")?.Count ?? 0;
+            int movers = levelCounts.FirstOrDefault(g => g.LevelId == "2")?.Count ?? 0;
+            int flyers = levelCounts.FirstOrDefault(g => g.LevelId == "3")?.Count ?? 0;
+
+            return (starters, movers, flyers);
         }
+
     }
 }

@@ -108,7 +108,7 @@ namespace Hybrid.Services.Services
         {
             try
             {
-                var (startersCourseCount, moversCourseCount, flyersCourseCount) = await _unitOfWork.CourseRepo.GetALlCourseByLevelAsync();
+                var (startersCourseCount, moversCourseCount, flyersCourseCount) = await _unitOfWork.CourseRepo.GetAllCourseByLevelAsync();
 
                 return new AnalyzeCourseResponse
                 {
