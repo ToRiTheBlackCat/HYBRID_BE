@@ -17,6 +17,7 @@ namespace Hybrid.Services.Services
         Task<DetailCoursesResponse?> GetCourseById(string? courseId);
         Task<(bool, string)> CreateCourse(CreateCourseRequest request);
         Task<(bool, string)> UpdateCourse(UpdateCourseRequest request);
+        Task<AnalyzeCourseResponse> AnalyzeCourse();
     }
     public class CourseService : ICourseService
     {
@@ -100,6 +101,26 @@ namespace Hybrid.Services.Services
                 await _unitOfWork.RollbackTransactionAsync();
                 Console.WriteLine(ex.Message);
                 return (false, "Update fail");
+            }
+        }
+
+        public async Task<AnalyzeCourseResponse> AnalyzeCourse()
+        {
+            try
+            {
+                var (startersCourseCount, moversCourseCount, flyersCourseCount) = await _unitOfWork.CourseRepo.GetAllCourseByLevelAsync();
+
+                return new AnalyzeCourseResponse
+                {
+                    NumberOfStartersCourse = startersCourseCount,
+                    NumberOfMoversCourse = moversCourseCount,
+                    NumberOfFlyersCourse = flyersCourseCount,
+                };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new AnalyzeCourseResponse();
             }
         }
     }
