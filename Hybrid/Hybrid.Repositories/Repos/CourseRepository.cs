@@ -2,6 +2,7 @@
 using Hybrid.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,5 +58,21 @@ namespace Hybrid.Repositories.Repos
 
             return "CO" + newNumber;
         }
+
+        public async Task<(int Starters, int Movers, int Flyers)> GetAllCourseByLevelAsync()
+        {
+            var levelCounts = await _context.Courses
+                .Where(c => c.LevelId == "1" || c.LevelId == "2" || c.LevelId == "3")
+                .GroupBy(c => c.LevelId)
+                .Select(g => new { LevelId = g.Key, Count = g.Count() })
+                .ToListAsync();
+
+            int starters = levelCounts.FirstOrDefault(g => g.LevelId == "1")?.Count ?? 0;
+            int movers = levelCounts.FirstOrDefault(g => g.LevelId == "2")?.Count ?? 0;
+            int flyers = levelCounts.FirstOrDefault(g => g.LevelId == "3")?.Count ?? 0;
+
+            return (starters, movers, flyers);
+        }
+
     }
 }

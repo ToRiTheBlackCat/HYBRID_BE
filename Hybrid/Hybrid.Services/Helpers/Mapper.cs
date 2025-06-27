@@ -8,6 +8,7 @@ using Hybrid.Services.ViewModel.Rating;
 using Hybrid.Services.ViewModel.SignUp;
 using Hybrid.Services.ViewModel.SupscriptionExtention;
 using Hybrid.Services.ViewModel.Tier;
+using Hybrid.Services.ViewModel.User;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -351,6 +352,25 @@ namespace Hybrid.Services.Helpers
                 Score = accomplisment.Score,
                 TakenDate = accomplisment.TakenDate
             };
+        }
+
+        public static List<FilterUsersResponse> Map_ListUser_To_ListFilterUsersResponse(this List<User> list)
+        {
+            var mappedList = new List<FilterUsersResponse>();
+            foreach (var user in list)
+            {
+                var response = new FilterUsersResponse
+                {
+                    UserId = user.UserId.Trim(),
+                    Email = user.Email.Trim(),
+                    CreatedDate = user.CreatedDate,
+                    RoleId = user.RoleId,
+                    IsActive = user.IsActive
+                };
+                mappedList.Add(response);
+            }
+
+            return mappedList;
         }
     }
 }

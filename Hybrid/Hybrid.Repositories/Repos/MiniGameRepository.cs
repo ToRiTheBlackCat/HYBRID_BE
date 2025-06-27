@@ -1,8 +1,7 @@
 ﻿using Hybrid.Repositories.Base;
 using Hybrid.Repositories.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -66,6 +65,24 @@ namespace Hybrid.Repositories.Repos
                 .ToList().Max() + 1;
 
             return "MG" + newNumber;
+        }
+
+        public async Task<Dictionary<string, int>> GetMinigamesCountByTemplateNameAsync()
+        {
+            var result = await _context.MinigameTemplates
+                .GroupJoin(
+                    _context.Minigames,
+                    template => template.TemplateId,
+                    game => game.TemplateId,
+                    (template, games) => new
+                    {
+                        TemplateName = template.TemplateName,
+                        Count = games.Count()
+                    })
+                .OrderBy(x => x.TemplateName)
+                .ToListAsync();
+
+            return result.ToDictionary(x => x.TemplateName, x => x.Count);
         }
     }
 }
