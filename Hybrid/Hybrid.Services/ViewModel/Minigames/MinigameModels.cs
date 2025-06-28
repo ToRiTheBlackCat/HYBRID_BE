@@ -359,44 +359,64 @@ namespace Hybrid.Services.ViewModel.Minigames
                 for (int j = 0; j < DimensionSize; j++)
                     grid[i, j] = '.';
 
-            Words = Words.OrderByDescending(w => w.Length).ToList(); // Place longest words first
-            var unplacedWords = Words.Select(x => x).ToList();
-            unplacedWords.Remove(unplacedWords[0]);
+            var orderedByLength = Words.OrderByDescending(w => w.Length).ToList(); // Place longest words first
+            var unplacedWords = orderedByLength.Select(x => x).ToList();
 
             // Place the first word horizontally in the middle
-            if (CanPlaceWord(Words[0].ToUpper(), DimensionSize / 2, (DimensionSize - Words[0].Length) / 2, true))
+            if (CanPlaceWord(orderedByLength[0].ToUpper(), DimensionSize / 2, (DimensionSize - orderedByLength[0].Length) / 2, true))
             {
-                PlaceWord(Words[0].ToUpper(), DimensionSize / 2, (DimensionSize - Words[0].Length) / 2, true);
+                PlaceWord(orderedByLength[0].ToUpper(), DimensionSize / 2, (DimensionSize - orderedByLength[0].Length) / 2, true);
             }
             else
             {
-                PlaceWord(Words[0].ToUpper(), DimensionSize / 2, 0, true);
+                PlaceWord(orderedByLength[0].ToUpper(), DimensionSize / 2, 0, true);
             }
+            placedWords.Add(orderedByLength[0].ToUpper());
+            unplacedWords.Remove(unplacedWords[0]);
             PrintGrid();
 
-            placedWords.Add(Words[0].ToUpper());
-
             var attempts = 0;
-
+            var reorderedClues = new List<string>();
+            // Reorder the hints
+            for (int h = 0; h < Words.Count; h++)
+            {
+                if (placedWords[0].Equals(Words[h].ToUpper()))
+                {
+                    reorderedClues.Add(Clues[h]);
+                }
+            }
 
             while (unplacedWords.Any() && attempts <= 10)
             {
                 for (int w = 0; w < unplacedWords.Count; w++)
                 {
-                    var word = unplacedWords[w].ToUpper();
-                    if (!TryPlaceWord(word))
+                    var word = unplacedWords[w];
+                    if (!TryPlaceWord(word.ToUpper()))
                         Console.WriteLine($"Could not place word: {word}");
                     else
                     {
                         Console.WriteLine($"Place word: {word}");
                         unplacedWords.Remove(word);
+                        placedWords.Add(word.ToUpper());
                         PrintGrid();
+
+                        // Reorder the hints
+                        for (int h = 0; h < Words.Count; h++)
+                        {
+                            if (word.ToUpper().Equals(Words[h].ToUpper()))
+                            {
+                                reorderedClues.Add(Clues[h]);
+                                break;
+                            }
+                        }
                     }
+
                 }
 
                 attempts++;
             }
 
+            this.Clues = reorderedClues;
             this.Words = placedWords;
             this.Array = PrintGrid();
         }
@@ -444,7 +464,6 @@ namespace Hybrid.Services.ViewModel.Minigames
 
 
                                     PlaceWord(word, startRow, startCol, isHorizontal);
-                                    placedWords.Add(word);
                                     return true;
                                 }
                             }
@@ -489,7 +508,6 @@ namespace Hybrid.Services.ViewModel.Minigames
         /// <param name="isHorizontal">Whether to place the word horizontally or vertically</param>
         private void PlaceWord(string word, int row, int col, bool isHorizontal)
         {
-
             StartPosition.Add($"{row},{col}");
             for (int i = 0; i < word.Length; i++)
             {
@@ -516,8 +534,8 @@ namespace Hybrid.Services.ViewModel.Minigames
                 Console.WriteLine();
             }
 
-            Console.WriteLine($"Words: {this.Words.ToString()}");
-            Console.WriteLine($"Start Positions: {this.StartPosition.ToString()}");
+            //Console.WriteLine($"Words: {this.Words.ToString()}");
+            //Console.WriteLine($"Start Positions: {this.StartPosition.ToString()}");
 
             return new string(chars);
         }
