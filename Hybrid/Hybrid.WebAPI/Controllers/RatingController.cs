@@ -1,6 +1,7 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Rating;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("{minigameId}")]
+        [Authorize]
         public async Task<ActionResult<List<GetAllRatingResponse>>> GetAllRatingOfMinigame(string minigameId)
         {
             var ratingList = await _ratingService.GetAllRatingByMinigameId(minigameId);
@@ -43,6 +45,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Rating>> RatingMinigame(CreateRatingRequest request)
         {
             if (!ModelState.IsValid)

@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Transaction;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("create-history")]
+        [Authorize]
         public async Task<ActionResult> CreateTransactionHistory([FromBody] TransactionRequest request)
         {
             if (!ModelState.IsValid)
@@ -50,6 +52,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("accept-history")]
+        [Authorize]
         public async Task<ActionResult> ConfirmTransactionHistory(string transactionHistoryId)
         {
             if (string.IsNullOrEmpty(transactionHistoryId))
@@ -74,6 +77,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("cancel-history")]
+        [Authorize]
         public async Task<ActionResult> CancelTransactionHistory(string transactionHistoryId)
         {
             if (string.IsNullOrEmpty(transactionHistoryId))

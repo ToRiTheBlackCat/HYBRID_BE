@@ -1,6 +1,7 @@
 ﻿using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Profile;
 using Hybrid.Services.ViewModel.SignUp;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
@@ -98,6 +99,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("profile")]
+        [Authorize]
         public async Task<ActionResult> GetProfile([FromQuery]GetProfileRequest request)
         {
             if (!ModelState.IsValid)
@@ -120,6 +122,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("update-profile")]
+        [Authorize]
         public async Task<ActionResult<UpdateProfileResponse?>> UpdateProfile([FromBody] UpdateProfileRequest updateRequest)
         {
             if (!ModelState.IsValid)

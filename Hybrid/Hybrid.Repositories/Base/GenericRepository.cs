@@ -18,7 +18,6 @@ namespace Hybrid.Repositories.Base
         T? GetById(string id);
         Task<T?> GetByIdAsync(string id);
         Task<T?> GetByIdWithIncludeAsync(int TId, string typeId, params Expression<Func<T, object>>[] includeProperties);
-
         void Create(T entity);
         Task<int> CreateAsync(T entity);
         void Update(T entity);
@@ -103,7 +102,6 @@ namespace Hybrid.Repositories.Base
 
             return entity;
         }
-
 
         /// <summary>
         /// Get detail with id and with generic include of entity

@@ -37,6 +37,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("templates")]
+        [Authorize]
         public async Task<ActionResult<List<GetMinigameTemplatesModel>>> GetMinigametTemplates()
         {
             var response = await _miniGameService.GetMinigameTemplatesAsync();
@@ -60,6 +61,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("course/{courseId}")]
+        [Authorize]
         public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfCourse(string courseId, [FromQuery] GetAllMinigameRequest request)
         {
             if (!ModelState.IsValid)
@@ -84,6 +86,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("teacher/{teacherId}")]
+        [Authorize]
         public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfTeacher(string teacherId, [FromQuery] GetAllMinigameRequest request)
         {
             if (!ModelState.IsValid)
@@ -108,6 +111,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<GetMiniGameResponse>> GetMiniGame([Required] string id)
         {
             if (!ModelState.IsValid)
@@ -134,6 +138,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("conjunction")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddConjunction([FromForm] AddMiniGameRequest<ConjunctionQuestion> request)
         {
             return await AddMiniGame(request);
@@ -148,6 +153,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("quiz")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddQuiz([FromForm] AddMiniGameRequest<QuizQuestion> request)
         {
             return await AddMiniGame(request);
@@ -162,6 +168,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPost("anagram")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddAnagram([FromForm] AddMiniGameRequest<AnagramQuestion> request)
         {
             return await AddMiniGame(request);
@@ -175,6 +182,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("random-card")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddRandomCard([FromForm] AddMiniGameRequest<RandomCardQuestion> request)
         {
             return await AddMiniGame(request);
@@ -188,6 +196,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("spelling")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddSpelling([FromForm] AddMiniGameRequest<SpellingQuestion> request)
         {
             return await AddMiniGame(request);
@@ -201,6 +210,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("flash-card")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddFlashCard([FromForm] AddMiniGameRequest<FlashCardQuestion> request)
         {
             return await AddMiniGame(request);
@@ -214,6 +224,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("completion")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddCompletion([FromForm] AddMiniGameRequest<CompletionQuestion> request)
         {
             return await AddMiniGame(request);
@@ -227,6 +238,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("pairing")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddPairing([FromForm] AddMiniGameRequest<PairingQuestion> request)
         {
             return await AddMiniGame(request);
@@ -240,6 +252,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("restoration")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddRestoration([FromForm] AddMiniGameRequest<RestorationQuestion> request)
         {
             return await AddMiniGame(request);
@@ -253,6 +266,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("word-find")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddWordFind([FromForm] AddMiniGameRequest<WordFindQuestion> request)
         {
             return await AddMiniGame(request);
@@ -266,6 +280,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("true-false")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddTrueFalse([FromForm] AddMiniGameRequest<TrueFalseQuestion> request)
         {
             return await AddMiniGame(request);
@@ -279,6 +294,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("cross-words")]
+        [Authorize]
         public async Task<ActionResult<AddMiniGameResponse>> AddCrossWords([FromForm] AddMiniGameRequest<CrossWordsQuestion> request)
         {
             return await AddMiniGame(request);
@@ -375,6 +391,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("conjunction")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateConjunction([FromForm] UpdateMinigameRequest<ConjunctionQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -389,6 +406,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("quiz")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateQuiz([FromForm] UpdateMinigameRequest<QuizQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -403,6 +421,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("anagram")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateAnagram([FromForm] UpdateMinigameRequest<AnagramQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -417,6 +436,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpPut("random-card")]
         [Consumes("multipart/form-data")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateRandomCard([FromForm] UpdateMinigameRequest<RandomCardQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -430,6 +450,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("spelling")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateSpelling([FromForm] UpdateMinigameRequest<SpellingQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -443,6 +464,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("flash-card")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateFlashCard([FromForm] UpdateMinigameRequest<FlashCardQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -456,6 +478,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("completion")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateCompletion([FromForm] UpdateMinigameRequest<CompletionQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -469,6 +492,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("pairing")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdatePairing([FromForm] UpdateMinigameRequest<PairingQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -482,6 +506,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("restoration")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateRestoration([FromForm] UpdateMinigameRequest<RestorationQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -495,6 +520,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("word-find")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateWordFind([FromForm] UpdateMinigameRequest<WordFindQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -508,6 +534,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("true-false")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateTrueFalse([FromForm] UpdateMinigameRequest<TrueFalseQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -521,6 +548,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPut("cross-words")]
+        [Authorize]
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateCrossWords([FromForm] UpdateMinigameRequest<CrossWordsQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
@@ -630,6 +658,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpDelete]
+        [Authorize]
         public async Task<ActionResult<DeleteMinigameResponse>> DeleteMinigame([Required] string minigameId)
         {
             if (!ModelState.IsValid)

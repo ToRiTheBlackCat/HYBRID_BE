@@ -1,6 +1,7 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.SupscriptionExtention;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: 20/6/2025
         /// </summary>
         [HttpPost("create-student")]
+        [Authorize]
         public async Task<ActionResult> CreateSupscriptionExtentionOfStudent([FromBody] SupscriptionExtentionOrderRequest request)
         {
             if (!ModelState.IsValid)
@@ -49,6 +51,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: 20/6/2025
         /// </summary>
         [HttpPost("create-teacher")]
+        [Authorize]
         public async Task<ActionResult> CreateSupscriptionExtentionOfTeacher([FromBody] SupscriptionExtentionOrderRequest request)
         {
             if (!ModelState.IsValid)
