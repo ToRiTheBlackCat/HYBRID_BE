@@ -99,7 +99,6 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("profile")]
-        [Authorize]
         public async Task<ActionResult> GetProfile([FromQuery]GetProfileRequest request)
         {
             if (!ModelState.IsValid)
