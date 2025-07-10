@@ -62,6 +62,7 @@ namespace Hybrid.WebAPI.Controllers
         /// </summary>
         [HttpGet("course/{courseId}")]
         [Authorize]
+        [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
         public async Task<ActionResult<GetAllMinigameResponse>> GetMiniGameOfCourse(string courseId, [FromQuery] GetAllMinigameRequest request)
         {
             if (!ModelState.IsValid)
