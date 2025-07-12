@@ -47,7 +47,7 @@ namespace Hybrid.Services.Helpers
                 issuer: _configure["JWT:Issuer"],
                 audience: _configure["JWT:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(10),
+                expires: DateTime.Now.AddMinutes(30),
                 signingCredentials: credential
                 );
 
