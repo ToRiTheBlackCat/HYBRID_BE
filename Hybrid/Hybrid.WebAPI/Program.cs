@@ -133,7 +133,16 @@ var app = builder.Build();
 //}
 
 // Enable serving static files
-app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
+        ctx.Context.Response.Headers["Pragma"] = "no-cache";
+        ctx.Context.Response.Headers["Expires"] = "0";
+    }
+});
+
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAllOrigins");

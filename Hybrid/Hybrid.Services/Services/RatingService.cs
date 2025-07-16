@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 
 namespace Hybrid.Services.Services
 {
-    //CreateRatingRequest
     public interface IRatingService
     {
         Task<List<GetAllRatingResponse>?> GetAllRatingByMinigameId(string minigameId);

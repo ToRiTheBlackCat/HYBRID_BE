@@ -1,6 +1,7 @@
 ﻿using Hybrid.Repositories.Models;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Tier;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,6 +29,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-student")]
+        [Authorize]
         public async Task<ActionResult<List<StudentTier>>> GetAllTierOfStudent()
         {
             var tierList = await _tierService.GetAllTierOfStudent();
@@ -44,6 +46,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-student-{tierId}")]
+        [Authorize]
         public async Task<ActionResult<TierResponse>> GetDetailOfStudentTierById(string tierId)
         {
             if (string.IsNullOrWhiteSpace(tierId))
@@ -63,6 +66,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-teacher")]
+        [Authorize]
         public async Task<ActionResult<List<TeacherTier>>> GetAllTierOfTeacher()
         {
             var tierList = await _tierService.GetAllTierOfTeacher();
@@ -79,6 +83,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("tier-teacher-{tierId}")]
+        [Authorize]
         public async Task<ActionResult<TierResponse>> GetDetailOfTeacherTierById(string tierId)
         {
             if (string.IsNullOrWhiteSpace(tierId))
@@ -98,6 +103,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("upgrade")]
+        [Authorize]
         public async Task<ActionResult> UpgradeTier([FromBody] UpgradeTierRequest request)
         {
             if (!ModelState.IsValid)

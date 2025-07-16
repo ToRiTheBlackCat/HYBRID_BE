@@ -14,6 +14,7 @@ namespace Hybrid.Repositories.Base
         private readonly HybridDBContext _context;
         private IDbContextTransaction? _transaction;
 
+        #region AddRepos
         public UserRepository UserRepo { get; }
         public StudentRepository StudentRepo { get; }
         public TeacherRepository TeacherRepo { get; }
@@ -28,6 +29,7 @@ namespace Hybrid.Repositories.Base
         public MinigameTemplateRepository MinigameTemplateRepo { get; }
         public RatingRepository RatingRepo { get; }
         public StudentAccomplishmentRepository StudentAccomplishmentRepo { get; }
+        #endregion
 
         public UnitOfWork(HybridDBContext context)
         {

@@ -12,6 +12,7 @@ namespace Hybrid.Repositories.Repos
     {
         public MiniGameRepository(HybridDBContext context) : base(context)
         {
+
         }
 
         public async Task<List<Minigame>> GetMinigamesOfTeacherAsync(string teacherId, string templateId, string minigameName)

@@ -16,11 +16,7 @@ namespace Hybrid.Services.ViewModel.Minigames
         [Required]
         public IFormFile ImageFile { get; set; }
 
-        [Required]
-        public string TeacherId { get; set; }
-
-        //[Required]
-        //public string GameDataJson { get; set; }
+        public string TeacherId;
 
         [Required]
         public int Duration { get; set; }
@@ -32,11 +28,6 @@ namespace Hybrid.Services.ViewModel.Minigames
 
         [Required]
         public List<T> GameData { get; set; }
-
-        //[JsonIgnore]
-        //public List<T> GameData => !this.Validate(null).Any() ?
-        //    JsonSerializer.Deserialize<List<T>>(GameDataJson) : new List<T>();
-
 
         public Minigame ToMiniGame()
         {

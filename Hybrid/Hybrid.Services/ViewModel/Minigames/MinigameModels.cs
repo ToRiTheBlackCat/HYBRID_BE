@@ -1,5 +1,6 @@
 ﻿using Hybrid.Repositories.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -540,5 +541,61 @@ namespace Hybrid.Services.ViewModel.Minigames
             return new string(chars);
         }
         #endregion
+    }
+
+
+    [XmlRoot("question")]
+    public class WordWaveQestion : MinigameModels
+    {
+        [XmlElement("words")]
+        [Required]
+        public List<string> Words { get; set; }
+
+        [XmlElement("types")]
+        [Required]
+        public List<int> Types { get; set; }
+
+        private enum WordType
+        {
+            Noun = 1,
+            Verb = 2,
+            Adjective = 3,
+            Adverb = 4,
+        }
+
+        public override string IsValidInput()
+        {
+            if (Words.Count != Types.Count)
+            {
+                return $"Number of {nameof(Words)}({Words.Count}) doesn't match number of {nameof(Types)}({Types.Count})";
+            }
+
+            // Setup enum error string
+            var validExample = "";
+            foreach (var type in Enum.GetValues(typeof(WordType)))
+            {
+                validExample += $", {type}({(int)type})";
+            }
+            validExample = validExample.Substring(2);
+
+            for (int index = 0; index < Words.Count; index++)
+            {
+                var type = this.Types[index];
+                var word = this.Words[index];
+
+                if (word.IsNullOrEmpty())
+                {
+                    return $"{nameof(Words)}[{index}] Can't be empty";
+                }
+
+                var isEnum = Enum.IsDefined(typeof(WordType), type);
+                if (!isEnum)
+                {
+                    return $"'{word}' {nameof(Types)}[{index}] = {type} Is not valid .Must be one of {validExample}.";
+                }
+            }
+
+            return "";
+        }
     }
 }

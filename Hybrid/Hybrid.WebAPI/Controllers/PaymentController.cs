@@ -1,6 +1,7 @@
 ﻿using Hybrid.Services.Helpers;
 using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Payment;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("payment-requests")]
+        [Authorize]
         public async Task<ActionResult> CreatePaymentRequest([FromBody] CreatePaymentRequest request)
         {
             PayOsClient client = new PayOsClient();
@@ -49,6 +51,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("check-payment/{id}")]
+        [Authorize]
         public async Task<ActionResult> CheckPaymentResponse(long id)
         {
             PayOsClient client = new PayOsClient();

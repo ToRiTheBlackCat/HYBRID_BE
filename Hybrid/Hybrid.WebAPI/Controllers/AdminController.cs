@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Data;
 using System.Security.Claims;
 
 namespace Hybrid.WebAPI.Controllers
@@ -35,6 +36,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("analyze-courses")]
+        [Authorize(Roles = "1")]
         public async Task<ActionResult<AnalyzeCourseResponse>> GetAnalyzeCourse()
         {
             var result = await _courseService.AnalyzeCourse();
@@ -51,6 +53,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("analyze-users")]
+        [Authorize(Roles = "1")]
         public async Task<ActionResult<AnalyzeUserResponse>> GetAnalyzeUser()
         {
             var result = await _userService.AnalyzeUser();
@@ -67,6 +70,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("analyze-minigames")]
+        [Authorize(Roles = "1")]
         public async Task<ActionResult> GetAnalyzeMinigames()
         {
             var result = await _miniGameService.AnalyzeMinigames();
@@ -83,6 +87,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost("filter-user")]
+        [Authorize(Roles = "1")]
         public async Task<ActionResult<List<FilterUsersResponse>>> FilterUserByDate(DateTime? fromDate, DateTime? toDate)
         {
             var userList = await _userService.FilterUsersByCreatedDate(fromDate, toDate);   

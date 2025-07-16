@@ -1,5 +1,6 @@
 ﻿using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Course;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections;
@@ -29,6 +30,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<List<CoursesResponse>>> GetAllCourse(string? courseName, string? levelId, int currentPage)
         {
             int pageSize = 12;
@@ -46,6 +48,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<DetailCoursesResponse>> GetCourseById(string? id)
         {
             var foundCourse = await _courseService.GetCourseById(id);
@@ -62,6 +65,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult> CreateCourse([FromBody] CreateCourseRequest request)
         {
             if (!ModelState.IsValid)
@@ -119,6 +123,7 @@ namespace Hybrid.WebAPI.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<ActionResult> UpdateCourse([FromBody] UpdateCourseRequest request)
         {
             if (!ModelState.IsValid)
