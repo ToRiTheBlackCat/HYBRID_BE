@@ -1,7 +1,4 @@
-﻿using Azure;
-using Hybrid.Services.Services;
-using Hybrid.Services.ViewModel;
-using Hybrid.Services.ViewModel.Accomplishment;
+﻿using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Minigames;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -300,6 +297,20 @@ namespace Hybrid.WebAPI.Controllers
         {
             return await AddMiniGame(request);
         }
+
+        /// <summary>
+        /// API_Add WordWave Minigame
+        /// Created By: TuanCA
+        /// Created Date: 16/07/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPost("word-wave")]
+        [Authorize]
+        public async Task<ActionResult<AddMiniGameResponse>> AddWordWave([FromForm] AddMiniGameRequest<WordWaveQestion> request)
+        {
+            return await AddMiniGame(request);
+        }
         #endregion
 
         /// <summary>
@@ -310,6 +321,13 @@ namespace Hybrid.WebAPI.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
+            }
+
+            // Get teacherId in auth token
+            var clainmTeacherId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+            if (clainmTeacherId != null)
+            {
+                request.TeacherId = clainmTeacherId;
             }
 
             // Validate ImageFile
@@ -553,6 +571,20 @@ namespace Hybrid.WebAPI.Controllers
         public async Task<ActionResult<UpdateMinigameResponse>> UpdateCrossWords([FromForm] UpdateMinigameRequest<CrossWordsQuestion> request, string fakeTeacherId = "")
         {
             return await UpdateMiniGame(request, fakeTeacherId);
+        }
+
+        /// <summary>
+        /// API_Update CrossWords Minigame
+        /// Created By: TuanCA
+        /// Created Date: 16/07/2025
+        /// Updated By: X
+        /// Updated Date: X
+        /// </summary>
+        [HttpPut("word-wave")]
+        [Authorize]
+        public async Task<ActionResult<UpdateMinigameResponse>> UpdateWordWave([FromForm] UpdateMinigameRequest<WordWaveQestion> request)
+        {
+            return await UpdateMiniGame(request, String.Empty);
         }
         #endregion
 
@@ -813,6 +845,9 @@ namespace Hybrid.WebAPI.Controllers
                     break;
                 case CrossWordsQuestion crossWords:
                     templateId = "TP12";
+                    break;
+                case WordWaveQestion wordWave:
+                    templateId = "TP13";
                     break;
                 default:
                     throw new ArgumentException("Invalid minigame type", nameof(minigame));
