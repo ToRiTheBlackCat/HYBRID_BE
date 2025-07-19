@@ -286,6 +286,13 @@ namespace Hybrid.Services.Services
             {
                 await _unitOfWork.BeginTransactionAsync();
 
+                //Check existed email
+                var foundUser = await _unitOfWork.UserRepo.GetUserByMailAsync(request.Email);
+                if (foundUser != null)
+                {
+                    return (false, "", "Existed user with that email. Try again");
+                }
+
                 var hashedPassword = Sha256Encoding.ComputeSHA256Hash(request.Password + HybridVariables.SecretString);
                 request.Password = hashedPassword;
 
