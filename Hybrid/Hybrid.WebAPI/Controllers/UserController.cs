@@ -1,10 +1,12 @@
-﻿using Hybrid.Services.Services;
+﻿using Azure.Core;
+using Hybrid.Services.Services;
 using Hybrid.Services.ViewModel.Profile;
 using Hybrid.Services.ViewModel.SignUp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace Hybrid.WebAPI.Controllers
 {
@@ -99,7 +101,7 @@ namespace Hybrid.WebAPI.Controllers
         /// Updated Date: X
         /// </summary>
         [HttpGet("profile")]
-        public async Task<ActionResult> GetProfile([FromQuery]GetProfileRequest request)
+        public async Task<ActionResult> GetProfile([FromQuery] GetProfileRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -136,5 +138,28 @@ namespace Hybrid.WebAPI.Controllers
             return Ok(result);
         }
 
+
+        [HttpPost("update-role")]
+        [Authorize]
+        public async Task<ActionResult<UpdateProfileResponse?>> UpdateRole(bool isTeacher)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Get teacherId in auth token
+            var clainmTeacherId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)!.Value;
+
+            var (isSuccess, message) = await _userService.UpdateUserRole(clainmTeacherId, isTeacher);
+            if (!isSuccess)
+            {
+                return BadRequest(message);
+            }
+
+            return Ok(new
+            {
+                isSuccess,
+                message
+            });
+        }
     }
 }

@@ -28,6 +28,7 @@ namespace Hybrid.Services.Services
         Task<User?> GetUserByRefreshTokenAsync(string refreshToken);
         Task<User?> GetUserByEmailAsync(string email);
         Task<int> UpdateUserAccount(User user);
+        Task<(bool, string)> UpdateUserRole(string userId, bool isTeacher);
         Task<(bool, string, string)> SignUpUserAccount(SignUpUserRequest request);
         Task<(bool, string)> SignUpTeacherAccount(SignUpTeacher_StudentRequest request);
         Task<(bool, string)> SignUpStudentAccount(SignUpTeacher_StudentRequest request);
@@ -271,6 +272,47 @@ namespace Hybrid.Services.Services
         public async Task<int> UpdateUserAccount(User user)
         {
             return await _userRepo.UpdateAsync(user);
+        }
+
+        /// <summary>
+        /// FUNC_Update user
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="isTeacher"></param>
+        /// <returns></returns>
+        public async Task<(bool, string)> UpdateUserRole(string userId, bool isTeacher)
+        {
+            var user = await _unitOfWork.UserRepo.GetFirstWithIncludeAsync(x => x.UserId == userId, [x => x.Teacher, x => x.Student]);
+            if (user == null)
+            {
+                return (false, $"No User with this ID: {userId}");
+            }
+
+            if (user.Teacher != null)
+            {
+                return (false, $"User {userId} already have a Teacher account linked.");
+            }
+            else if (user.Student != null)
+            {
+                return (false, $"User {userId} already have a Student account linked.");
+            }
+
+            try
+            {
+                await _unitOfWork.BeginTransactionAsync();
+
+                user.RoleId = isTeacher ? "3" : "2";
+                await _unitOfWork.UserRepo.UpdateAsync(user);
+                await _unitOfWork.CommitTransactionAsync();
+
+                return (true, $"Role updated to: {user.RoleId}");
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                Console.Write(ex.Message);
+                return (false, "Update failed");
+            }
         }
 
         /// <summary>
