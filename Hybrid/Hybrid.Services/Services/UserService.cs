@@ -93,6 +93,11 @@ namespace Hybrid.Services.Services
 
             if (user != null)
             {
+                if (user.RoleId != request.RoleId)
+                {
+                    return null;
+                }
+
                 return user;
             }
 
@@ -482,7 +487,7 @@ namespace Hybrid.Services.Services
                     TeachersList = teacherList
                 };
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return new AnalyzeUserResponse();
