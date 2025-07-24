@@ -67,7 +67,7 @@ This section should list any major frameworks/libraries used to bootstrap your p
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-## contributors
+## Contributors
 <a href="https://github.com/ToRiTheBlackCat/HYBRID_BE/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=ToRiTheBlackCat/HYBRID_BE" />
 </a>
